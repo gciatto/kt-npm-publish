@@ -1,0 +1,9 @@
+complexity:
+  NestedBlockDepth:
+    threshold: 5
+performance:
+  SpreadOperator:
+    active: false
+style:
+  MagicNumber:
+    ignoreNumbers: ["-1", "0", "1", "2", "3", "4", "10", "16", "32"]
