@@ -1,4 +1,4 @@
-package org.danilopianini.template.test
+package io.github.gciatto.kt.node.test
 
 import com.uchuhimo.konf.Config
 import com.uchuhimo.konf.source.yaml

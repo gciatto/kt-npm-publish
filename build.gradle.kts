@@ -21,7 +21,7 @@ inner class NpmPublishInfo {
     val longName = "Publish Kotlin projects on NPM"
     val website = "https://github.com/gciatto/kt-npm-publish"
     val scm = "git@github.com:gciatto/kt-npm-publish.git"
-    val pluginImplementationClass = "$group.kt.node.NpmPulish"
+    val pluginImplementationClass = "$group.kt.node.NpmPublishPlugin"
     val tags = listOf("kotlin", "multi plaftorm", "js", "javascript", "publish", "npm", "gradle")
 }
 val info = NpmPublishInfo()
@@ -169,7 +169,7 @@ pluginBundle {
 gradlePlugin {
     plugins {
         create("NpmPublish") {
-            id = "$group.npm.publish"
+            id = "$group.kt.npm.publish"
             displayName = info.longName
             description = project.description
             implementationClass = info.pluginImplementationClass
