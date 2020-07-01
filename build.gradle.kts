@@ -16,15 +16,15 @@ plugins {
  * Project information
  */
 group = "io.github.gciatto"
-description = "A plugin easing the management of Kotlin Multiplaftorm projects"
-inner class ProjectInfo {
-    val longName = "Kotlin Multi-Plaftorm ++"
-    val website = "https://github.com/gciatto/kotlin-mpp-plusplus"
-    val scm = "git@github.com:gciatto/kotlin-mpp-plusplus.git"
-    val pluginImplementationClass = "$group.kt.mpp.KotlinMultiPlaftormPlusPlus"
-    val tags = listOf("kotlin", "multi plaftorm", "publish", "npm", "maven")
+description = "A plugin easing the publishin of Kotlin JS/Multiplaftorm projects on NPM"
+inner class NpmPublishInfo {
+    val longName = "Publish Kotlin projects on NPM"
+    val website = "https://github.com/gciatto/kt-npm-publish"
+    val scm = "git@github.com:gciatto/kt-npm-publish.git"
+    val pluginImplementationClass = "$group.kt.node.NpmPulish"
+    val tags = listOf("kotlin", "multi plaftorm", "js", "javascript", "publish", "npm", "gradle")
 }
-val info = ProjectInfo()
+val info = NpmPublishInfo()
 
 gitSemVer {
     version = computeGitSemVer()
@@ -63,7 +63,9 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:_")
     api(gradleApi())
     api(gradleKotlinDsl())
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
     implementation(kotlin("stdlib-jdk8"))
+    implementation("com.google.code.gson", "gson", "2.8.6")
     testImplementation(gradleTestKit())
     testImplementation("com.uchuhimo:konf-yaml:_")
     testImplementation("io.github.classgraph:classgraph:_")
@@ -166,8 +168,8 @@ pluginBundle {
 
 gradlePlugin {
     plugins {
-        create("KotlinMultiPlaftormPlusPlus") {
-            id = "$group.${project.name}"
+        create("NpmPublish") {
+            id = "$group.npm.publish"
             displayName = info.longName
             description = project.description
             implementationClass = info.pluginImplementationClass

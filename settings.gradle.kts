@@ -11,4 +11,4 @@ buildscript {
     }
 }
 bootstrapRefreshVersionsAndDependencies(justAdditionalAliases)
-rootProject.name = "kt-mp++"
+rootProject.name = "kt-npm-publish"
