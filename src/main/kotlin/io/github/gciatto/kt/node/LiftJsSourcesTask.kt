@@ -25,7 +25,7 @@ open class LiftJsSourcesTask : DefaultTask() {
         if (!jsSourcesDir.exists() || !jsSourcesDir.isDirectory) {
             throw IllegalStateException("$jsSourcesDir is not a valid directory path")
         }
-        for (file in project.fileTree(jsSourcesDir) { include("**/*.js") }) {
+        for (file in project.fileTree(jsSourcesDir) { it.include("**/*.js") }) {
             val temp = temporaryDir.resolve("${file.nameWithoutExtension}-${file.hashCode()}.js")
             temp.createNewFile()
             BufferedWriter(OutputStreamWriter(temp.outputStream())).use { output ->
