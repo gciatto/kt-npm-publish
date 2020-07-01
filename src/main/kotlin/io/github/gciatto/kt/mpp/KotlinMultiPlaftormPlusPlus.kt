@@ -1,4 +1,4 @@
-package org.danilopianini.template
+package io.github.gciatto.kt.mpp
 
 import java.io.Serializable
 import org.gradle.api.DefaultTask
@@ -14,9 +14,9 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.register
 
-open class HelloGradle : Plugin<Project> {
+open class KotlinMultiPlaftormPlusPlusPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val extension = target.extensions.create<HelloExtension>("hello")
+        val extension = target.extensions.create<KotlinMultiPlaftormPlusPlusExtension>("hello")
         target.tasks.register<HelloTask>("hello") {
             author.set(extension.author)
         }
@@ -37,6 +37,6 @@ open class HelloTask : DefaultTask() {
     }
 }
 
-open class HelloExtension(objects: ObjectFactory) : Serializable {
+open class KotlinMultiPlaftormPlusPlusExtension(objects: ObjectFactory) : Serializable {
     val author: Property<String> = objects.property()
 }

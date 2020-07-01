@@ -11,4 +11,4 @@ buildscript {
     }
 }
 bootstrapRefreshVersionsAndDependencies(justAdditionalAliases)
-rootProject.name = "Template-for-Gradle-Plugins"
+rootProject.name = "kt-mp++"

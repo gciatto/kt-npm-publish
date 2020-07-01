@@ -15,14 +15,14 @@ plugins {
 /*
  * Project information
  */
-group = "org.danilopianini"
-description = "A template repository for kickstarting Gradle Plugins"
+group = "io.github.gciatto"
+description = "A plugin easing the management of Kotlin Multiplaftorm projects"
 inner class ProjectInfo {
-    val longName = "Template for Gradle Plugins"
-    val website = "https://github.com/DanySK/Template-for-Gradle-Plugins"
-    val scm = "git@github.com:DanySK/Template-for-Gradle-Plugins.git"
-    val pluginImplementationClass = "$group.template.HelloGradle"
-    val tags = listOf("template", "kickstart", "example")
+    val longName = "Kotlin Multi-Plaftorm ++"
+    val website = "https://github.com/gciatto/kotlin-mpp-plusplus"
+    val scm = "git@github.com:gciatto/kotlin-mpp-plusplus.git"
+    val pluginImplementationClass = "$group.kt.mpp.KotlinMultiPlaftormPlusPlus"
+    val tags = listOf("kotlin", "multi plaftorm", "publish", "npm", "maven")
 }
 val info = ProjectInfo()
 
@@ -148,9 +148,9 @@ publishing {
             pom {
                 developers {
                     developer {
-                        name.set("Danilo Pianini")
-                        email.set("danilo.pianini@gmail.com")
-                        url.set("http://www.danilopianini.org/")
+                        name.set("Giovanni Ciatto")
+                        email.set("giovanni.ciatto@gmail.com")
+                        url.set("https://about.me/gciatto")
                     }
                 }
             }
@@ -166,7 +166,7 @@ pluginBundle {
 
 gradlePlugin {
     plugins {
-        create("GradleLatex") {
+        create("KotlinMultiPlaftormPlusPlus") {
             id = "$group.${project.name}"
             displayName = info.longName
             description = project.description
