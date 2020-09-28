@@ -7,6 +7,10 @@ import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
+import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 class NpmPublishPlugin : Plugin<Project> {
 
@@ -104,6 +108,38 @@ class NpmPublishPlugin : Plugin<Project> {
         publish.dependsOn(liftPackageJson)
         publish.dependsOn(liftJsSourcesTask)
         liftPackageJson.dependsOn(copy)
+        target.attemptAutomaticConfig(extension)
+    }
+
+    private fun Project.attemptAutomaticConfig(extension: NpmPublishExtension) {
+        rootProject.tasks.withType<NodeJsSetupTask>().asSequence()
+                .map { it.destination }
+                .firstOrNull()
+                ?.let {
+                    extension.nodeRoot = it
+                }
+        tasks.withType<KotlinPackageJsonTask>().asSequence()
+                .filterNot { it.name.contains("test", ignoreCase = true) }
+                .map { it.packageJson }
+                .firstOrNull()
+                ?.let {
+                    extension.packageJson = it
+                }
+        tasks.withType<Kotlin2JsCompile>().asSequence()
+                .filterNot { it.name.contains("test", ignoreCase = true) }
+                .map { it.outputFile.parentFile }
+                .firstOrNull()
+                ?.let {
+                    extension.jsSourcesDir = it
+                }
+        val classesTasks = tasks.filter { it.name.endsWith("mainClasses", ignoreCase = true) }
+        when (classesTasks.size) {
+            0 -> { /* do nothing */ }
+            1 -> extension.jsCompileTask = classesTasks.single().name
+            else -> classesTasks.firstOrNull { it.name.contains("js", ignoreCase = true) }?.let {
+                extension.jsCompileTask = it.name
+            }
+        }
     }
 }
 

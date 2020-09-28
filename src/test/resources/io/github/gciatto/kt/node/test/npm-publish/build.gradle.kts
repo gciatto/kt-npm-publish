@@ -27,15 +27,15 @@ kotlin {
 }
 
 npmPublishing {
-    nodeRoot = rootProject.tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
+//    nodeRoot = rootProject.tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
     token = "tokenHere"
-    packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
-    nodeSetupTask = rootProject.tasks.getByName("kotlinNodeJsSetup").path
-    jsCompileTask = "jsMainClasses"
-    jsSourcesDir = tasks.withType<Kotlin2JsCompile>().asSequence()
-            .filter { "Test" !in it.name }
-            .map { it.outputFile.parentFile }
-            .first()
+//    packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
+//    nodeSetupTask = rootProject.tasks.getByName("kotlinNodeJsSetup").path
+//    jsCompileTask = "jsMainClasses"
+//    jsSourcesDir = tasks.withType<Kotlin2JsCompile>().asSequence()
+//            .filter { "Test" !in it.name }
+//            .map { it.outputFile.parentFile }
+//            .first()
 
     liftPackageJson {
         version = "2.3.4"

@@ -1,7 +1,12 @@
 tests:
   - description: "A greeting should get printed"
     configuration:
-      tasks: hello
+      tasks: tasks
     expectation:
-      output_contains: "Hello from Danilo Pianini"
-      success: hello
+      output_contains:
+        - npmPublish
+        - npmLogin
+        - npmLoginSetRegistry
+        - npmLoginSetToken
+        - liftPackageJson
+      success: tasks
