@@ -1,5 +1,5 @@
 tests:
-  - description: "A greeting should get printed"
+  - description: "Kt-Js projects importing npm.publish should be endowed with a number of tasks"
     configuration:
       tasks: tasks
     expectation:

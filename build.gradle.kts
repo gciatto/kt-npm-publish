@@ -170,7 +170,7 @@ pluginBundle {
 gradlePlugin {
     plugins {
         create("NpmPublish") {
-            id = "$group.kt.npm.publish"
+            id = "${rootProject.group}.kt.npm.publish"
             displayName = info.longName
             description = project.description
             implementationClass = info.pluginImplementationClass
