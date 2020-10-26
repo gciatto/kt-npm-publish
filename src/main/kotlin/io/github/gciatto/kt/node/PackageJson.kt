@@ -4,20 +4,20 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
 data class PackageJson(
-        var name: String? = null,
-        var main: String? = null,
-        var version: String? = null,
-        var dependencies: MutableMap<String, String>? = null,
-        var devDependencies: MutableMap<String, String>? = null,
-        var peerDependencies: MutableMap<String, String>? = null,
-        var homepage: String? = null,
-        var bugs: Bugs? = null,
-        var keywords: MutableList<String>? = null,
-        var people: MutableList<People>? = null,
-        var license: String? = null,
-        var files: MutableList<String>? = null,
-        var bin: String? = null,
-        var bins: MutableMap<String, String>? = null
+    var name: String? = null,
+    var main: String? = null,
+    var version: String? = null,
+    var dependencies: MutableMap<String, String>? = null,
+    var devDependencies: MutableMap<String, String>? = null,
+    var peerDependencies: MutableMap<String, String>? = null,
+    var homepage: String? = null,
+    var bugs: Bugs? = null,
+    var keywords: MutableList<String>? = null,
+    var people: MutableList<People>? = null,
+    var license: String? = null,
+    var files: MutableList<String>? = null,
+    var bin: String? = null,
+    var bins: MutableMap<String, String>? = null
 ) {
     companion object {
         fun fromJson(element: JsonElement): PackageJson =
@@ -41,21 +41,29 @@ data class PackageJson(
     }
 
     fun toJson(): JsonObject {
-        return JsonObject().also { obj ->
-            name?.let { obj.addProperty("name", it) }
-            main?.let { obj.addProperty("main", it) }
-            version?.let { obj.addProperty("version", it) }
-            homepage?.let { obj.addProperty("homepage", it) }
-            license?.let { obj.addProperty("license", it) }
-            bugs?.let { obj.add("bugs", it.toJson()) }
-            bin?.let { obj.addProperty("bin", it) }
-            keywords?.let { obj.add("keywords", jsonArray(it.map(String::toJson))) }
-            files?.let { obj.add("files", jsonArray(it.map(String::toJson))) }
-            people?.let { obj.add("people", jsonArray(it.map(People::toJson))) }
-            dependencies?.let { obj.add("dependencies", jsonObject(it)) }
-            devDependencies?.let { obj.add("devDependencies", jsonObject(it)) }
-            peerDependencies?.let { obj.add("peerDependencies", jsonObject(it)) }
-            bins?.let { obj.add("bin", jsonObject(it)) }
+        return JsonObject().also {
+            it.addSimpleProperties()
+            it.addComplexProperties()
         }
+    }
+
+    private fun JsonObject.addSimpleProperties() {
+        name?.let { addProperty("name", it) }
+        main?.let { addProperty("main", it) }
+        version?.let { addProperty("version", it) }
+        homepage?.let { addProperty("homepage", it) }
+        license?.let { addProperty("license", it) }
+        bugs?.let { add("bugs", it.toJson()) }
+        bin?.let { addProperty("bin", it) }
+    }
+
+    private fun JsonObject.addComplexProperties() {
+        keywords?.let { add("keywords", jsonArray(it.map(String::toJson))) }
+        files?.let { add("files", jsonArray(it.map(String::toJson))) }
+        people?.let { add("people", jsonArray(it.map(People::toJson))) }
+        dependencies?.let { add("dependencies", jsonObject(it)) }
+        devDependencies?.let { add("devDependencies", jsonObject(it)) }
+        peerDependencies?.let { add("peerDependencies", jsonObject(it)) }
+        bins?.let { add("bin", jsonObject(it)) }
     }
 }

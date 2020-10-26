@@ -56,4 +56,3 @@ fun JsonElement.asListOrNull(): MutableList<JsonElement>? {
 fun JsonElement.asPropertyListOrNull(): MutableList<String>? {
     return asListOrNull()?.map { it.asString }?.toMutableList()
 }
-

@@ -32,6 +32,7 @@ gitSemVer {
 
 repositories {
     mavenCentral()
+    jcenter()
     mapOf(
         "kotlin/dokka" to setOf("org.jetbrains.dokka"),
         "kotlin/kotlinx.html" to setOf("org.jetbrains.kotlinx"),
