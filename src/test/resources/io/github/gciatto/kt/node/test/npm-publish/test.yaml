@@ -4,9 +4,16 @@ tests:
       tasks: tasks
     expectation:
       output_contains:
+        - copyFilesNextToPackageJson
         - npmPublish
         - npmLogin
         - npmLoginSetRegistry
         - npmLoginSetToken
         - liftPackageJson
       success: tasks
+
+  - description: "Kt-Js projects importing npm.publish should support npmLogin by only setting up the token property"
+    configuration:
+      tasks: npmLogin
+    expectation:
+      success: npmLogin

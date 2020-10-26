@@ -1,3 +1,7 @@
+import org.danilopianini.gradle.mavencentral.JavadocJar
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     jacoco
     `java-gradle-plugin`
@@ -29,6 +33,8 @@ val info = NpmPublishInfo()
 gitSemVer {
     version = computeGitSemVer()
 }
+
+println("$group:$name v$version")
 
 repositories {
     mavenCentral()
@@ -96,7 +102,7 @@ tasks.test {
         showCauses = true
         showStackTraces = true
         events(*org.gradle.api.tasks.testing.logging.TestLogEvent.values())
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
@@ -118,11 +124,11 @@ detekt {
     }
 }
 
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask> {
+tasks.withType<DokkaTask> {
     // Workaround for https://github.com/Kotlin/dokka/issues/294
     outputFormat = if (JavaVersion.current().isJava10Compatible) "html" else "javadoc"
     outputDirectory = "$buildDir/javadoc"
-    tasks.withType<org.danilopianini.gradle.mavencentral.JavadocJar> {
+    tasks.withType<JavadocJar> {
         from(outputDirectory)
     }
 }

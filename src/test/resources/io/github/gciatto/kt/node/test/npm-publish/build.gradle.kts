@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin("js") version "1.4.10"
-    id("io.github.gciatto.kt.npm.publish")
+    id("io.github.gciatto.kt.npm.publish") version "+"
 }
 
 group = "org.example"
@@ -19,16 +19,16 @@ dependencies {
     implementation(kotlin("stdlib-js"))
 }
 
-kotlin {
-    js {
-        nodejs { }
-        binaries.executable()
-    }
-}
+//kotlin {
+//    js {
+//        nodejs { }
+//        binaries.executable()
+//    }
+//}
 
 npmPublishing {
 //    nodeRoot = rootProject.tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
-    token = "tokenHere"
+    token.set("tokenHere")
 //    packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
 //    nodeSetupTask = rootProject.tasks.getByName("kotlinNodeJsSetup").path
 //    jsCompileTask = "jsMainClasses"

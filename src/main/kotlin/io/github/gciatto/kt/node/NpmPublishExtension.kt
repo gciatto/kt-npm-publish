@@ -2,11 +2,16 @@ package io.github.gciatto.kt.node
 
 import com.google.gson.JsonObject
 import org.gradle.api.Action
+import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
+import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import java.io.File
 
 open class NpmPublishExtension(objects: ObjectFactory) {
@@ -83,5 +88,26 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         with(jsSourcesLiftingActions) {
             add(lineTransformer)
         }
+    }
+
+    fun defaultValuesFrom(project: Project) {
+        val rootProject = project.rootProject
+        rootProject.tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.firstOrNull()?.let {
+            nodeRoot.set(it)
+        }
+        project.tasks.withType<KotlinPackageJsonTask>().asSequence()
+                .filterNot { it.name.contains("test", ignoreCase = true) }
+                .filter { it.name.contains("PackageJson", ignoreCase = true) }
+                .firstOrNull()
+                ?.packageJson
+                ?.let { packageJson.set(it) }
+        rootProject.tasks.findByName("kotlinNodeJsSetup")?.path?.let {
+            nodeSetupTask.set(it)
+        }
+        project.tasks.withType<Kotlin2JsCompile>().asSequence()
+            .filterNot { it.name.contains("test", ignoreCase = true) }
+            .map { it.outputFile.parentFile }
+            .firstOrNull()
+            ?.let { jsSourcesDir.set(it) }
     }
 }
