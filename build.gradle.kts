@@ -80,7 +80,7 @@ kotlin {
     target {
         compilations.all {
             kotlinOptions {
-                allWarningsAsErrors = true
+//                allWarningsAsErrors = true
                 freeCompilerArgs = listOf("-XXLanguage:+InlineClasses", "-Xopt-in=kotlin.RequiresOptIn")
                 jvmTarget = JavaVersion.VERSION_1_8.toString()
             }
