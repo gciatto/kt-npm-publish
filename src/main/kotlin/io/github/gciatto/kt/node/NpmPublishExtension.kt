@@ -90,24 +90,30 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         }
     }
 
+    private fun warn(message: () -> String) {
+        System.err.println("[WARNING] [$NAME]: ${message()}")
+    }
+
     fun defaultValuesFrom(project: Project) {
         val rootProject = project.rootProject
         rootProject.tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.firstOrNull()?.let {
             nodeRoot.set(it)
-        }
+        } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeRoot.name}" }
         project.tasks.withType<KotlinPackageJsonTask>().asSequence()
                 .filterNot { it.name.contains("test", ignoreCase = true) }
                 .filter { it.name.contains("PackageJson", ignoreCase = true) }
                 .firstOrNull()
                 ?.packageJson
                 ?.let { packageJson.set(it) }
+                ?: warn { "Could not automatically infer ${NpmPublishExtension::packageJson.name}" }
         rootProject.tasks.findByName("kotlinNodeJsSetup")?.path?.let {
             nodeSetupTask.set(it)
-        }
+        } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeSetupTask.name}" }
         project.tasks.withType<Kotlin2JsCompile>().asSequence()
             .filterNot { it.name.contains("test", ignoreCase = true) }
             .map { it.outputFile.parentFile }
             .firstOrNull()
             ?.let { jsSourcesDir.set(it) }
+            ?: warn { "Could not automatically infer ${NpmPublishExtension::jsSourcesDir.name}" }
     }
 }

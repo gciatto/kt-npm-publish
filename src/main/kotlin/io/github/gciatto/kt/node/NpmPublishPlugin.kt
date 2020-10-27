@@ -52,6 +52,7 @@ class NpmPublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         extension = target.extensions.create(NpmPublishExtension.NAME, NpmPublishExtension::class.java)
+        extension.defaultValuesFrom(target)
         val login = target.createNpmLoginTask("npmLogin")
         val publish = target.createNpmPublishTask("npmPublish")
         val liftPackageJson = target.createLiftPackageJsonTask("liftPackageJson")

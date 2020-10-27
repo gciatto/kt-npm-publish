@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin("js") version "1.4.10"
+//    id("org.jetbrains.kotlin.js") version "1.4.10"
     id("io.github.gciatto.kt.npm.publish") version "+"
 }
 
@@ -19,12 +20,13 @@ dependencies {
     implementation(kotlin("stdlib-js"))
 }
 
-//kotlin {
-//    js {
-//        nodejs { }
-//        binaries.executable()
-//    }
-//}
+kotlin {
+    js {
+        nodejs {
+        }
+        binaries.executable()
+    }
+}
 
 npmPublishing {
 //    nodeRoot = rootProject.tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
