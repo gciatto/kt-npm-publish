@@ -7,7 +7,7 @@ plugins {
     `java-gradle-plugin`
     kotlin("jvm")
     `maven-publish`
-    signing
+//    signing
     id("com.gradle.plugin-publish")
     id("io.gitlab.arturbosch.detekt")
     id("org.jetbrains.dokka")
@@ -135,11 +135,11 @@ tasks.withType<DokkaTask> {
     }
 }
 
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useInMemoryPgpKeys(signingKey, signingPassword)
-}
+// signing {
+//    val signingKey: String? by project
+//    val signingPassword: String? by project
+//    useInMemoryPgpKeys(signingKey, signingPassword)
+// }
 
 /*
  * Publication on Maven Central and the Plugin portal
