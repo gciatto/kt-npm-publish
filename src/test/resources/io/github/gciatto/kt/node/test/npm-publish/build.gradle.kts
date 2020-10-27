@@ -4,9 +4,9 @@ import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
-    kotlin("js") version "1.4.10"
+    kotlin("js") //version "1.3.72"
 //    id("org.jetbrains.kotlin.js") version "1.4.10"
-    id("io.github.gciatto.kt.npm.publish") version "+"
+    id("io.github.gciatto.kt-npm-publish") version "+"
 }
 
 group = "org.example"

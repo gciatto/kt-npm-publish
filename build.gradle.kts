@@ -57,11 +57,13 @@ repositories {
  */
 val createClasspathManifest = tasks.register("createClasspathManifest") {
     val outputDir = file("$buildDir/$name")
-    inputs.files(sourceSets.main.get().runtimeClasspath)
+    val currentClasspath = System.getProperty("java.class.path").split(File.pathSeparator).map { File(it) }
+    val classpathEntries = sourceSets.main.get().runtimeClasspath.toList() + currentClasspath
+    inputs.files(classpathEntries)
     outputs.dir(outputDir)
     doLast {
         outputDir.mkdirs()
-        file("$outputDir/plugin-classpath.txt").writeText(sourceSets.main.get().runtimeClasspath.joinToString("\n"))
+        file("$outputDir/plugin-classpath.txt").writeText(classpathEntries.joinToString("\n"))
     }
 }
 tasks.withType<Test> { dependsOn(createClasspathManifest) }
@@ -176,7 +178,7 @@ pluginBundle {
 gradlePlugin {
     plugins {
         create("NpmPublish") {
-            id = "${rootProject.group}.kt.npm.publish"
+            id = "${rootProject.group}.${rootProject.name}"
             displayName = info.longName
             description = project.description
             implementationClass = info.pluginImplementationClass
