@@ -4,6 +4,9 @@ tests:
       tasks: tasks
     expectation:
       output_contains:
+        - Could not automatically infer nodeRoot
+        - Could not automatically infer packageJson
+        - Could not automatically infer nodeSetupTask
         - copyFilesNextToPackageJson
         - npmPublish
         - npmLogin

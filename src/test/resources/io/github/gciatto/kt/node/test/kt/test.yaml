@@ -1,0 +1,6 @@
+tests:
+  - description: "Kt-Js projects work"
+    configuration:
+      tasks: []
+    expectation:
+      success: tasks
