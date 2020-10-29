@@ -43,7 +43,7 @@ class Tests : StringSpec({
             test.description {
                 val result = GradleRunner.create()
                     .withProjectDir(testFolder.root)
-                    .withPluginClasspath().also { println("Plugin Classpath:\n\t" + it.pluginClasspath.joinToString("\n\t")) }
+                    .withPluginClasspath() //.also { println("Plugin Classpath:\n\t" + it.pluginClasspath.joinToString("\n\t")) }
 //                    .withPluginClasspath(classpath)
                     .withArguments(test.configuration.tasks + test.configuration.options)
                     .build()

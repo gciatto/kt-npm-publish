@@ -126,15 +126,15 @@ detekt {
     }
 }
 
-tasks.withType<DokkaTask> {
-    // Workaround for https://github.com/Kotlin/dokka/issues/294
-    outputFormat = if (JavaVersion.current().isJava10Compatible) "html" else "javadoc"
-    outputDirectory = "$buildDir/javadoc"
-    tasks.withType<JavadocJar> {
-        from(outputDirectory)
-    }
-}
-
+//tasks.withType<DokkaTask> {
+//    // Workaround for https://github.com/Kotlin/dokka/issues/294
+//    outputFormat = if (JavaVersion.current().isJava10Compatible) "html" else "javadoc"
+//    outputDirectory = "$buildDir/javadoc"
+//    tasks.withType<JavadocJar> {
+//        from(outputDirectory)
+//    }
+//}
+//
 // signing {
 //    val signingKey: String? by project
 //    val signingPassword: String? by project
