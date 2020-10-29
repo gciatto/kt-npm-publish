@@ -1,5 +1,5 @@
 tests:
-  - description: "Kt-Js projects importing npm.publish should be endowed with a number of tasks"
+  - description: "Kt-Js projects importing and configuring kt-npm-publish should be endowed with a number of tasks"
     configuration:
       tasks: tasks
     expectation:
@@ -12,7 +12,7 @@ tests:
         - liftPackageJson
       success: tasks
 
-  - description: "Kt-Js projects importing npm.publish should support npmLogin by only setting up the token property"
+  - description: "Kt-Js projects importing kt-npm-publish should support npmLogin by only setting up the `token` property"
     configuration:
       tasks: npmLogin
     expectation:
