@@ -110,24 +110,25 @@ open class NpmPublishExtension(objects: ObjectFactory) {
                 .firstOrNull()
                 ?.packageJson
                 ?.let {
-                    println("Inferred packageJson: $it");
+                    println("Inferred packageJson: $it")
                     packageJson.set(it)
                 } ?: warn { "Could not automatically infer ${NpmPublishExtension::packageJson.name}" }
         rootProject.tasks.findByName("kotlinNodeJsSetup")
                 ?.path
                 ?.let {
-                    println("Inferred nodeSetupTask: $it");
+                    println("Inferred nodeSetupTask: $it")
                     nodeSetupTask.set(it)
                 } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeSetupTask.name}" }
         project.tasks.withType<Kotlin2JsCompile>().asSequence()
                 .filterNot { it.name.contains("test", ignoreCase = true) }
-                .map { it.outputFile.parentFile }
+                .onEach {
+                    println("Inferred jsCompileTask: $it")
+                    jsCompileTask.set(it.name)
+                }.map { it.outputFile.parentFile }
                 .firstOrNull()
                 ?.let {
-                    println("Inferred jsSourcesDir: $it");
+                    println("Inferred jsSourcesDir: $it")
                     jsSourcesDir.set(it)
-                    println("Inferred jsCompileTask: $it");
-                    jsCompileTask.set(it.name)
                 } ?: warn {
                     "Could not automatically infer ${NpmPublishExtension::jsSourcesDir.name}" +
                             " and ${NpmPublishExtension::jsCompileTask.name}"

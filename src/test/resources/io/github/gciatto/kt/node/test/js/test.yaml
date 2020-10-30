@@ -17,3 +17,9 @@ tests:
       tasks: npmLogin
     expectation:
       success: npmLogin
+
+  - description: "Kt-Js projects support compilation as an NPM project"
+    configuration:
+      tasks: compileKotlinJs
+    expectation:
+      success: compileKotlinJs
