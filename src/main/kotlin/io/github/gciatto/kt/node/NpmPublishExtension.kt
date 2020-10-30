@@ -26,16 +26,16 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         private const val npmScriptSubpath = "node_modules/npm/bin/npm-cli.js"
 
         private val possibleNodePaths: Sequence<String> =
-            sequenceOf("bin/node", "node").let { paths ->
-                if (isWindows) {
-                    paths.map { "$it.exe" } + paths
-                } else {
-                    paths
+                sequenceOf("bin/node", "node").let { paths ->
+                    if (isWindows) {
+                        paths.map { "$it.exe" } + paths
+                    } else {
+                        paths
+                    }
                 }
-            }
 
         private val possibleNpmPaths: Sequence<String> =
-            sequenceOf("lib/", "").map { it + npmScriptSubpath }
+                sequenceOf("lib/", "").map { it + npmScriptSubpath }
     }
 
     val nodeRoot: Property<File> = objects.property()
@@ -100,24 +100,37 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         rootProject.tasks.withType<NodeJsSetupTask>().asSequence()
                 .map { it.destination }
                 .firstOrNull()
-                ?.let { println("Inferred nodeRoot: $it") ; nodeRoot.set(it) }
-                ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeRoot.name}" }
+                ?.let {
+                    println("Inferred nodeRoot: $it")
+                    nodeRoot.set(it)
+                } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeRoot.name}" }
         project.tasks.withType<KotlinPackageJsonTask>().asSequence()
                 .filterNot { it.name.contains("test", ignoreCase = true) }
                 .filter { it.name.contains("PackageJson", ignoreCase = true) }
                 .firstOrNull()
                 ?.packageJson
-                ?.let { println("Inferred packageJson: $it") ; packageJson.set(it) }
-                ?: warn { "Could not automatically infer ${NpmPublishExtension::packageJson.name}" }
+                ?.let {
+                    println("Inferred packageJson: $it");
+                    packageJson.set(it)
+                } ?: warn { "Could not automatically infer ${NpmPublishExtension::packageJson.name}" }
         rootProject.tasks.findByName("kotlinNodeJsSetup")
                 ?.path
-                ?.let { println("Inferred nodeSetupTask: $it") ; nodeSetupTask.set(it) }
-                ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeSetupTask.name}" }
+                ?.let {
+                    println("Inferred nodeSetupTask: $it");
+                    nodeSetupTask.set(it)
+                } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeSetupTask.name}" }
         project.tasks.withType<Kotlin2JsCompile>().asSequence()
-            .filterNot { it.name.contains("test", ignoreCase = true) }
-            .map { it.outputFile.parentFile }
-            .firstOrNull()
-            ?.let { println("Inferred jsSourcesDir: $it") ; jsSourcesDir.set(it) }
-            ?: warn { "Could not automatically infer ${NpmPublishExtension::jsSourcesDir.name}" }
+                .filterNot { it.name.contains("test", ignoreCase = true) }
+                .map { it.outputFile.parentFile }
+                .firstOrNull()
+                ?.let {
+                    println("Inferred jsSourcesDir: $it");
+                    jsSourcesDir.set(it)
+                    println("Inferred jsCompileTask: $it");
+                    jsCompileTask.set(it.name)
+                } ?: warn {
+                    "Could not automatically infer ${NpmPublishExtension::jsSourcesDir.name}" +
+                            " and ${NpmPublishExtension::jsCompileTask.name}"
+                }
     }
 }

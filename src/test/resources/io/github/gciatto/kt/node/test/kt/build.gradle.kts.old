@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
-import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+//import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+//import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
+//import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
+//import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin("js") version "1.4.10"

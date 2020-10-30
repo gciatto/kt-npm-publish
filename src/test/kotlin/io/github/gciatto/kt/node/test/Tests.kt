@@ -45,6 +45,7 @@ class Tests : StringSpec({
                     .withProjectDir(testFolder.root)
                     .withPluginClasspath() //.also { println("Plugin Classpath:\n\t" + it.pluginClasspath.joinToString("\n\t")) }
 //                    .withPluginClasspath(classpath)
+                    .withDebug(true)
                     .withArguments(test.configuration.tasks + test.configuration.options)
                     .build()
                 println(result.tasks)
