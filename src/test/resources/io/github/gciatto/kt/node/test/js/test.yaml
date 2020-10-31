@@ -32,10 +32,18 @@ tests:
       output_matches: *output_matches
       success: compileKotlinJs
       file_exists:
-        - name: "build/js/packages/test-js/package.json"
-          contents: '"version": "1.0.0"'
-        - name: "build/js/packages/test-js/kotlin/test-js.js"
-          contents: "this['test-js']"
+        - name: &file_package_json
+            "build/js/packages/test-js/package.json"
+          contents:
+            - '"version": "1\.0\.0"'
+            - '"main": "kotlin/test-js\.js"'
+            - '"name": "test-js"'
+            - '"kotlin": "file:.*?/1.4.10"'
+        - name: &file_generated_js
+            "build/js/packages/test-js/kotlin/test-js.js"
+          contents:
+            - "this\\['test-js'\\]"
+            - "require\\('kotlin'\\)"
 
   - description: "Kt-Js projects importing and configuring kt-npm-publish support lifting of generated package.json files"
     configuration:
@@ -44,5 +52,5 @@ tests:
       output_matches: *output_matches
       success: liftPackageJson
       file_exists:
-        - name: "build/js/packages/test-js/package.json"
-          contents: '"version": "1.2.3"'
+        - name: *file_package_json
+          contents: '"version": "1\.2\.3"'

@@ -67,11 +67,10 @@ class Tests : StringSpec({
                     result.outcomeOf(it) shouldBe TaskOutcome.FAILED
                 }
                 test.expectation.file_exists.forEach {
-                    val file = it.file
-                    with(if (file.isAbsolute) { file } else { testFolder.root.resolve(file) }) {
-                        shouldExist()
-                        shouldBeAFile()
-                    }
+                    val file = it.actualFile(testFolder.root)
+                    file.shouldExist()
+                    file.shouldBeAFile()
+                    it.isValid(testFolder.root) shouldBe true
                 }
             }
         }
