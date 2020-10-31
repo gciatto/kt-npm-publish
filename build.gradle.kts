@@ -1,6 +1,5 @@
-import org.danilopianini.gradle.mavencentral.JavadocJar
+
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     jacoco
@@ -126,14 +125,14 @@ detekt {
     }
 }
 
-//tasks.withType<DokkaTask> {
+// tasks.withType<DokkaTask> {
 //    // Workaround for https://github.com/Kotlin/dokka/issues/294
 //    outputFormat = if (JavaVersion.current().isJava10Compatible) "html" else "javadoc"
 //    outputDirectory = "$buildDir/javadoc"
 //    tasks.withType<JavadocJar> {
 //        from(outputDirectory)
 //    }
-//}
+// }
 //
 // signing {
 //    val signingKey: String? by project
