@@ -10,6 +10,7 @@ tests:
         - npmLoginSetRegistry
         - npmLoginSetToken
         - liftPackageJson
+        - liftJsSources
       output_matches: &output_matches
         - "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v12.16.1-linux-x64"
         - "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
@@ -53,4 +54,38 @@ tests:
       success: liftPackageJson
       file_exists:
         - name: *file_package_json
-          contents: '"version": "1\.2\.3"'
+          contents:
+            - '"version": "1\.2\.3"'
+            - '"main": "kotlin/test-js\.js"'
+            - '"name": "@organization/test-js"'
+            - '"kotlin": "1.4.10"'
+
+  - description: "Kt-Js projects importing and configuring kt-npm-publish support lifting of generated .js files"
+    configuration:
+      tasks: liftJsSources
+    expectation:
+      output_matches: *output_matches
+      success: liftJsSources
+      file_exists:
+        - name: *file_generated_js
+          contents:
+            - "this\\['@organization/test-js'\\]"
+            - "require\\('kotlin'\\)"
+
+  - description: "Kt-Js projects importing and configuring kt-npm-publish support copying project files close to package.json"
+    configuration:
+      tasks: copyFilesNextToPackageJson
+    expectation:
+      output_matches: *output_matches
+      success: copyFilesNextToPackageJson
+      file_exists:
+        - name: "build/js/packages/test-js/README.md"
+
+  - description: "Kt-Js projects importing and configuring kt-npm-publish support publishing of JS projects on NPM"
+    configuration:
+      tasks: npmPublish
+    expectation:
+      output_matches: *output_matches
+      output_contains:
+        - 'npm ERR! 404 Not Found - PUT https://registry.npmjs.org/@organization%2ftest-js - Not found'
+      failure: npmPublish

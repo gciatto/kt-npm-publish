@@ -3,7 +3,6 @@ package io.github.gciatto.kt.node
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.property
 import java.io.File
 
@@ -23,15 +22,12 @@ open class CopyRootProjectFilesTask : Copy() {
     init {
         group = "nodeJs"
         dependsOn(jsCompileTask)
-    }
-
-    @TaskAction
-    override fun copy() {
+        inputs.files("README*", "CONTRIB*", "LICENSE*")
+        outputs.files(packageJson)
         from(project.rootProject.projectDir)
         include("README*")
         include("CONTRIB*")
         include("LICENSE*")
-        destinationDir = packageJson.get()
-        super.copy()
+        into(packageJson.map { it.parentFile })
     }
 }

@@ -23,7 +23,7 @@ data class Expectation(
     val output_matches: List<String> = emptyList()
 )
 
-data class ExistingFile(val name: String, val contents: List<String> = emptyList(), val all: Boolean = false) {
+data class ExistingFile(val name: String, val contents: List<String> = emptyList(), val all: Boolean = true) {
     private val regexes by lazy { contents.map { Regex(it) } }
     private fun Sequence<Boolean>.matches(): Boolean = if (all) all { it } else any { it }
     fun isValid(root: File): Boolean {
@@ -31,6 +31,7 @@ data class ExistingFile(val name: String, val contents: List<String> = emptyList
         val lines = actualFile.readLines()
         return regexes.asSequence().map { regex -> lines.any { regex.containsMatchIn(it) } }.matches()
     }
+
     val file: File get() = File(name)
     fun actualFile(root: File) = file.let { if (it.isAbsolute) it else root.resolve(it) }
 }

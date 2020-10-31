@@ -28,5 +28,18 @@ npmPublishing {
 
     liftPackageJson {
         version = '1.2.3'
+        name = "@organization/$name"
+        dependencies = dependencies.collectEntries { name, version ->
+            if (version.startsWith("file:")) {
+                [name, version.split('/').last()]
+            } else {
+                [name, version]
+            }
+        }
+    }
+
+    liftJsSources { file, i, line ->
+        line.replace("'test-js", "'@organization/test-js")
+                .replace("\"test-js", "\"@organization/test-js")
     }
 }
