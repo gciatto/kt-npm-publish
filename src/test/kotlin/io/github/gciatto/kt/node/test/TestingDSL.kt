@@ -19,7 +19,8 @@ data class Expectation(
     val file_exists: List<ExistingFile> = emptyList(),
     val success: List<String> = emptyList(),
     val failure: List<String> = emptyList(),
-    val output_contains: List<String> = emptyList()
+    val output_contains: List<String> = emptyList(),
+    val output_matches: List<String> = emptyList()
 )
 
 data class ExistingFile(val name: String, val contents: String = ".*", val everyLine: Boolean = false) {
@@ -27,4 +28,5 @@ data class ExistingFile(val name: String, val contents: String = ".*", val every
     fun isValid() = with(File(name)) {
         exists() && readLines().asSequence().map { it.matches(Regex(contents)) }.matches()
     }
+    val file: File get() = File(name)
 }

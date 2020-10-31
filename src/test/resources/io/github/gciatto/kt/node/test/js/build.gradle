@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'org.example'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -17,7 +17,7 @@ dependencies {
 
 kotlin {
     js {
-        nodejs { }
+        nodejs ()
         binaries.executable()
     }
 }
@@ -25,4 +25,8 @@ kotlin {
 npmPublishing {
     defaultValuesFrom rootProject
     token.set("fake_token")
+
+    liftPackageJson {
+        version = '1.2.3'
+    }
 }

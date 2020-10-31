@@ -35,7 +35,6 @@ abstract class AbstractNodeExecTask(requiresCompilation: Boolean = false) : Exec
     }
 
     open fun defaultValuesFrom(extension: NpmPublishExtension) {
-        println("Set default values for $name")
         nodeSetupTask.set(extension.nodeSetupTask)
         jsCompileTask.set(extension.jsCompileTask)
         node.set(extension.node)

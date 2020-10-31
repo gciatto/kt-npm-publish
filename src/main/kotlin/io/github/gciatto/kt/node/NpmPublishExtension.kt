@@ -38,7 +38,9 @@ open class NpmPublishExtension(objects: ObjectFactory) {
                 sequenceOf("lib/", "").map { it + npmScriptSubpath }
     }
 
-    val nodeRoot: Property<File> = objects.property()
+    var verbose = false
+
+    private val nodeRoot: Property<File> = objects.property()
 
     val nodeSetupTask: Property<String> = objects.property()
 
@@ -90,48 +92,44 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         }
     }
 
-    private fun warn(message: () -> String) {
-        System.err.println("[WARNING] [$NAME]: ${message()}")
+    private fun warn(project: Project, message: () -> String) {
+        if (verbose) {
+            println("[WARNING] [${project.name}] [$NAME]: ${message()}")
+        }
+    }
+
+    private fun log(project: Project, message: () -> String) {
+        if (verbose) {
+            println("[${project.name}] [$NAME]: ${message()}")
+        }
     }
 
     fun defaultValuesFrom(project: Project) {
         val rootProject = project.rootProject
-//        rootProject.tasks.map { "${it.name}:${it::class.java.simpleName}" }.forEach(::println)
-        rootProject.tasks.withType<NodeJsSetupTask>().asSequence()
-                .map { it.destination }
-                .firstOrNull()
-                ?.let {
-                    println("Inferred nodeRoot: $it")
-                    nodeRoot.set(it)
-                } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeRoot.name}" }
-        project.tasks.withType<KotlinPackageJsonTask>().asSequence()
-                .filterNot { it.name.contains("test", ignoreCase = true) }
-                .filter { it.name.contains("PackageJson", ignoreCase = true) }
-                .firstOrNull()
-                ?.packageJson
-                ?.let {
-                    println("Inferred packageJson: $it")
-                    packageJson.set(it)
-                } ?: warn { "Could not automatically infer ${NpmPublishExtension::packageJson.name}" }
-        rootProject.tasks.findByName("kotlinNodeJsSetup")
-                ?.path
-                ?.let {
-                    println("Inferred nodeSetupTask: $it")
-                    nodeSetupTask.set(it)
-                } ?: warn { "Could not automatically infer ${NpmPublishExtension::nodeSetupTask.name}" }
-        project.tasks.withType<Kotlin2JsCompile>().asSequence()
-                .filterNot { it.name.contains("test", ignoreCase = true) }
-                .onEach {
-                    println("Inferred jsCompileTask: $it")
-                    jsCompileTask.set(it.name)
-                }.map { it.outputFile.parentFile }
-                .firstOrNull()
-                ?.let {
-                    println("Inferred jsSourcesDir: $it")
-                    jsSourcesDir.set(it)
-                } ?: warn {
-                    "Could not automatically infer ${NpmPublishExtension::jsSourcesDir.name}" +
-                            " and ${NpmPublishExtension::jsCompileTask.name}"
+        rootProject.tasks.withType<NodeJsSetupTask>()
+                .all {
+                    log(project) { "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${it.path}: ${it.destination}" }
+                    nodeRoot.set(it.destination)
+                    log(project) { "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${it.path}" }
+                    nodeSetupTask.set(it.path)
+                }
+        project.tasks.withType<KotlinPackageJsonTask>()
+                .matching { !it.name.contains("test", ignoreCase = true) }
+                .all {
+                    try {
+                        log(project) { "Inferred ${NpmPublishExtension::packageJson.name} from task ${it.path}: ${it.packageJson}" }
+                        packageJson.set(it.packageJson)
+                    } catch (_: UninitializedPropertyAccessException) {
+                        warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} from task ${it.path}" }
+                    }
+                }
+        project.tasks.withType<Kotlin2JsCompile>()
+                .matching { !it.name.contains("test", ignoreCase = true) }
+                .all {
+                    log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: ${it.path}" }
+                    jsCompileTask.set(it.path)
+                    log(project) { "Inferred ${NpmPublishExtension::jsSourcesDir.name} from task ${it.path}: ${it.outputFile.parentFile}" }
+                    jsSourcesDir.set(it.outputFile.parentFile)
                 }
     }
 }

@@ -52,6 +52,7 @@ class NpmPublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         extension = target.extensions.create(NpmPublishExtension.NAME, NpmPublishExtension::class.java)
+        extension.verbose = target.property(VERBOSE_PROPERTY)?.toString().toBoolean()
         extension.defaultValuesFrom(target)
         val login = target.createNpmLoginTask("npmLogin")
         val publish = target.createNpmPublishTask("npmPublish")
@@ -62,5 +63,9 @@ class NpmPublishPlugin : Plugin<Project> {
         publish.dependsOn(liftPackageJson)
         publish.dependsOn(liftJsSourcesTask)
         liftPackageJson.dependsOn(copy)
+    }
+
+    companion object {
+        const val VERBOSE_PROPERTY: String = "io.github.gciatto.kt-npm-publish.verbose"
     }
 }
