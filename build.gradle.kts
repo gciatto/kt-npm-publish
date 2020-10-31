@@ -54,18 +54,18 @@ repositories {
  * By default, Gradle does not include all the plugin classpath into the testing classpath.
  * This task creates a descriptor of the runtime classpath, to be injected (manually) when running tests.
  */
-val createClasspathManifest = tasks.register("createClasspathManifest") {
-    val outputDir = file("$buildDir/$name")
-    val currentClasspath = System.getProperty("java.class.path").split(File.pathSeparator).map { File(it) }
-    val classpathEntries = sourceSets.main.get().runtimeClasspath.toList() + currentClasspath
-    inputs.files(classpathEntries)
-    outputs.dir(outputDir)
-    doLast {
-        outputDir.mkdirs()
-        file("$outputDir/plugin-classpath.txt").writeText(classpathEntries.joinToString("\n"))
-    }
-}
-tasks.withType<Test> { dependsOn(createClasspathManifest) }
+// val createClasspathManifest = tasks.register("createClasspathManifest") {
+//    val outputDir = file("$buildDir/$name")
+//    val currentClasspath = System.getProperty("java.class.path").split(File.pathSeparator).map { File(it) }
+//    val classpathEntries = sourceSets.main.get().runtimeClasspath.toList() + currentClasspath
+//    inputs.files(classpathEntries)
+//    outputs.dir(outputDir)
+//    doLast {
+//        outputDir.mkdirs()
+//        file("$outputDir/plugin-classpath.txt").writeText(classpathEntries.joinToString("\n"))
+//    }
+// }
+// tasks.withType<Test> { dependsOn(createClasspathManifest) }
 
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:_")
@@ -81,7 +81,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm:_")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:_")
     testImplementation("org.mockito:mockito-core:_")
-    testRuntimeOnly(files(createClasspathManifest))
+//    testRuntimeOnly(files(createClasspathManifest))
 }
 
 kotlin {

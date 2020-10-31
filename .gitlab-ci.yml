@@ -1,0 +1,44 @@
+image: pikalab/ci:ubuntu-jdk14-git-gradle-graphviz
+
+variables:
+  GOPTS: "--no-daemon --console=plain"
+  CI: "true"
+  BEFORE_TASK: ""
+  AFTER_TASK: ""
+  GCMD: "./gradlew"
+  BUILD_TASK: "assemble"
+  TEST_TASK: "test"
+  SIGN_TASK: "signAllPublications --parallel"
+  BINTRAY_TASK: "publishAllToBintray --parallel"
+  CENTRAL_TASK: "publishAllPublicationsToMavenRepository --parallel"
+
+before_script:
+  - chmod +x gradlew
+  - source $HOME/.sdkman/bin/sdkman-init.sh
+
+cache:
+  paths:
+    - $HOME/.gradle/
+    - $HOME/.m2/
+    - gradle/
+    - .gradle/
+    - build/
+
+Compile:
+  stage: build
+  script:
+    - $GCMD $BEFORE_TASK $BUILD_TASK $AFTER_TASK $GOPTS
+  only:
+    - branches
+  needs: [ ]
+
+Test:
+  stage: test
+  script: $GCMD $BEFORE_TASK $TEST_TASK $AFTER_TASK $GOPTS
+  artifacts:
+    reports:
+      junit: "**/build/test-results/*.xml"
+  only:
+    - branches
+  needs:
+    - job: Compile
