@@ -192,7 +192,7 @@ jobs:
         run: gradle ${{ env.gradle-options }} dokkaHtml --parallel
 
       - name: Sign Archives
-        run: gradle ${{ env.gradle-options }} signAllPublications --parallel
+        run: gradle ${{ env.gradle-options }} sign --parallel
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
@@ -254,7 +254,7 @@ jobs:
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
 
-      - name: Publish on Maven Central Repo
+      - name: Publish Gradle Plugin
         run: gradle ${{ env.gradle-options }} publishPlugin --parallel || gradle ${{ env.gradle-options }} publishPlugin --parallel
         #        if: contains(github.ref, 'master')
         env:
