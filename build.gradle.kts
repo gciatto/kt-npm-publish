@@ -1,12 +1,13 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     jacoco
     `java-gradle-plugin`
     kotlin("jvm")
     `maven-publish`
-//    signing
+    signing
     id("com.gradle.plugin-publish")
     id("io.gitlab.arturbosch.detekt")
     id("org.jetbrains.dokka")
@@ -88,8 +89,8 @@ kotlin {
     target {
         compilations.all {
             kotlinOptions {
-//                allWarningsAsErrors = true
-                freeCompilerArgs = listOf("-XXLanguage:+InlineClasses", "-Xopt-in=kotlin.RequiresOptIn")
+                allWarningsAsErrors = true
+//                freeCompilerArgs = listOf("-XXLanguage:+InlineClasses", "-Xopt-in=kotlin.RequiresOptIn")
                 jvmTarget = JavaVersion.VERSION_1_8.toString()
             }
         }
@@ -102,7 +103,7 @@ tasks.test {
         showStandardStreams = true
         showCauses = true
         showStackTraces = true
-        events(*org.gradle.api.tasks.testing.logging.TestLogEvent.values())
+        events(*TestLogEvent.values())
         exceptionFormat = TestExceptionFormat.FULL
     }
 }
@@ -133,12 +134,12 @@ detekt {
 //        from(outputDirectory)
 //    }
 // }
-//
-// signing {
-//    val signingKey: String? by project
-//    val signingPassword: String? by project
-//    useInMemoryPgpKeys(signingKey, signingPassword)
-// }
+
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+}
 
 /*
  * Publication on Maven Central and the Plugin portal

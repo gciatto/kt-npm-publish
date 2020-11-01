@@ -108,16 +108,22 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         val rootProject = project.rootProject
         rootProject.tasks.withType<NodeJsSetupTask>()
                 .all {
-                    log(project) { "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${it.path}: ${it.destination}" }
+                    log(project) {
+                        "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${it.path}: ${it.destination}"
+                    }
                     nodeRoot.set(it.destination)
-                    log(project) { "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${it.path}" }
+                    log(project) {
+                        "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${it.path}"
+                    }
                     nodeSetupTask.set(it.path)
                 }
         project.tasks.withType<KotlinPackageJsonTask>()
                 .matching { !it.name.contains("test", ignoreCase = true) }
                 .all {
                     try {
-                        log(project) { "Inferred ${NpmPublishExtension::packageJson.name} from task ${it.path}: ${it.packageJson}" }
+                        log(project) {
+                            "Inferred ${NpmPublishExtension::packageJson.name} from task ${it.path}: ${it.packageJson}"
+                        }
                         packageJson.set(it.packageJson)
                     } catch (_: UninitializedPropertyAccessException) {
                         warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} from task ${it.path}" }
@@ -128,7 +134,10 @@ open class NpmPublishExtension(objects: ObjectFactory) {
                 .all {
                     log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: ${it.path}" }
                     jsCompileTask.set(it.path)
-                    log(project) { "Inferred ${NpmPublishExtension::jsSourcesDir.name} from task ${it.path}: ${it.outputFile.parentFile}" }
+                    log(project) {
+                        "Inferred ${NpmPublishExtension::jsSourcesDir.name} from task ${it.path}" +
+                                ": ${it.outputFile.parentFile}"
+                    }
                     jsSourcesDir.set(it.outputFile.parentFile)
                 }
     }

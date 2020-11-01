@@ -6,6 +6,7 @@ variables:
   BEFORE_TASK: ""
   AFTER_TASK: ""
   GCMD: "./gradlew"
+  CHECK_TASK: "ktlintCheck detekt"
   BUILD_TASK: "assemble"
   TEST_TASK: "test"
   SIGN_TASK: "signAllPublications --parallel"
@@ -27,6 +28,7 @@ cache:
 Compile:
   stage: build
   script:
+    - $GCMD $BEFORE_TASK $CHECK_TASK $AFTER_TASK $GOPTS
     - $GCMD $BEFORE_TASK $BUILD_TASK $AFTER_TASK $GOPTS
   only:
     - branches
