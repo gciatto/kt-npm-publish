@@ -27,6 +27,8 @@ inner class NpmPublishInfo {
     val scm = "git@github.com:gciatto/kt-npm-publish.git"
     val pluginImplementationClass = "$group.kt.node.NpmPublishPlugin"
     val tags = listOf("kotlin", "multi plaftorm", "js", "javascript", "publish", "npm", "gradle")
+    val license = "Apache 2.0"
+    val licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0"
 }
 val info = NpmPublishInfo()
 
@@ -50,23 +52,6 @@ repositories {
         }
     }
 }
-
-/*
- * By default, Gradle does not include all the plugin classpath into the testing classpath.
- * This task creates a descriptor of the runtime classpath, to be injected (manually) when running tests.
- */
-// val createClasspathManifest = tasks.register("createClasspathManifest") {
-//    val outputDir = file("$buildDir/$name")
-//    val currentClasspath = System.getProperty("java.class.path").split(File.pathSeparator).map { File(it) }
-//    val classpathEntries = sourceSets.main.get().runtimeClasspath.toList() + currentClasspath
-//    inputs.files(classpathEntries)
-//    outputs.dir(outputDir)
-//    doLast {
-//        outputDir.mkdirs()
-//        file("$outputDir/plugin-classpath.txt").writeText(classpathEntries.joinToString("\n"))
-//    }
-// }
-// tasks.withType<Test> { dependsOn(createClasspathManifest) }
 
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:_")
@@ -126,49 +111,6 @@ detekt {
     }
 }
 
-// tasks.withType<DokkaTask> {
-//    // Workaround for https://github.com/Kotlin/dokka/issues/294
-//    outputFormat = if (JavaVersion.current().isJava10Compatible) "html" else "javadoc"
-//    outputDirectory = "$buildDir/javadoc"
-//    tasks.withType<JavadocJar> {
-//        from(outputDirectory)
-//    }
-// }
-
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useInMemoryPgpKeys(signingKey, signingPassword)
-}
-
-/*
- * Publication on Maven Central and the Plugin portal
- */
-publishOnCentral {
-    projectLongName.set(info.longName)
-    projectDescription.set(description)
-    projectUrl.set(info.website)
-    scmConnection.set(info.scm)
-//    licenseName.set("...") // Defaults to Apache 2.0
-//    licenseUrl.set("...") // Defaults to Apache 2.0 url
-}
-
-publishing {
-    publications {
-        withType<MavenPublication> {
-            pom {
-                developers {
-                    developer {
-                        name.set("Giovanni Ciatto")
-                        email.set("giovanni.ciatto@gmail.com")
-                        url.set("https://about.me/gciatto")
-                    }
-                }
-            }
-        }
-    }
-}
-
 pluginBundle {
     website = info.website
     vcsUrl = info.website
@@ -184,4 +126,55 @@ gradlePlugin {
             implementationClass = info.pluginImplementationClass
         }
     }
+}
+
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+}
+
+publishing {
+    publications {
+        withType<MavenPublication> {
+            pom {
+                name.set(info.longName)
+                description.set(project.description)
+                packaging = "jar"
+                url.set(info.website)
+                if (!this@withType.name.contains("MavenCentral", ignoreCase=true)) {
+                    licenses {
+                        license {
+                            name.set(info.license)
+                            url.set(info.licenseUrl)
+                        }
+                    }
+                }
+                scm {
+                    url.set(info.website)
+                    connection.set(info.scm)
+                    developerConnection.set(info.scm)
+                }
+                developers {
+                    developer {
+                        name.set("Giovanni Ciatto")
+                        email.set("giovanni.ciatto@gmail.com")
+                        url.set("https://about.me/gciatto")
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Publication on Maven Central and the Plugin portal
+ */
+publishOnCentral {
+    projectLongName.set(info.longName)
+    projectDescription.set(description)
+    projectUrl.set(info.website)
+    scmConnection.set(info.scm)
+    licenseName.set(info.license)
+    licenseUrl.set(info.licenseUrl)
 }
