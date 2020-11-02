@@ -189,10 +189,10 @@ jobs:
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-test
 
       - name: Generate Doc
-        run: ./gradlew${{ env.gradle-options }} dokkaHtml --parallel
+        run: ./gradlew ${{ env.gradle-options }} dokkaHtml --parallel
 
       - name: Sign Archives
-        run: ./gradlew${{ env.gradle-options }} sign --parallel
+        run: ./gradlew ${{ env.gradle-options }} sign --parallel
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
@@ -249,14 +249,14 @@ jobs:
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-maven-
 
       #      - name: Sign Archives
-      #        run: ./gradlew${{ env.gradle-options }} signAllPublications --parallel
+      #        run: ./gradlew ${{ env.gradle-options }} signAllPublications --parallel
 
       - name: Publish on Maven Central Repo
-        run: ./gradlew${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel || ./gradlew${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel || ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel
         #        if: contains(github.ref, 'master')
 
       - name: Publish Gradle Plugin
-        run: ./gradlew${{ env.gradle-options }} publishPlugin --parallel || ./gradlew${{ env.gradle-options }} publishPlugin --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishPlugin --parallel || ./gradlew ${{ env.gradle-options }} publishPlugin --parallel
         #        if: contains(github.ref, 'master')
         env:
           ORG_GRADLE_PROJECT_gradle.publish.key: ${{ secrets.GRADLE_KEY }}
