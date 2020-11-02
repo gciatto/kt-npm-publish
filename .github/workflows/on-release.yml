@@ -189,13 +189,15 @@ jobs:
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-test
 
       - name: Generate Doc
-        run: gradle ${{ env.gradle-options }} dokkaHtml --parallel
+        run: ./gradlew${{ env.gradle-options }} dokkaHtml --parallel
 
       - name: Sign Archives
-        run: gradle ${{ env.gradle-options }} sign --parallel
+        run: ./gradlew${{ env.gradle-options }} sign --parallel
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -204,6 +206,8 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
       ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
     steps:
       #      - *checkout_code
       - name: Checkout code
@@ -245,17 +249,14 @@ jobs:
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-maven-
 
       #      - name: Sign Archives
-      #        run: gradle ${{ env.gradle-options }} signAllPublications --parallel
+      #        run: ./gradlew${{ env.gradle-options }} signAllPublications --parallel
 
       - name: Publish on Maven Central Repo
-        run: gradle ${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel || gradle ${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel
+        run: ./gradlew${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel || ./gradlew${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel
         #        if: contains(github.ref, 'master')
-        env:
-          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
-          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
 
       - name: Publish Gradle Plugin
-        run: gradle ${{ env.gradle-options }} publishPlugin --parallel || gradle ${{ env.gradle-options }} publishPlugin --parallel
+        run: ./gradlew${{ env.gradle-options }} publishPlugin --parallel || ./gradlew${{ env.gradle-options }} publishPlugin --parallel
         #        if: contains(github.ref, 'master')
         env:
           ORG_GRADLE_PROJECT_gradle.publish.key: ${{ secrets.GRADLE_KEY }}
