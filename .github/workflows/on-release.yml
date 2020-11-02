@@ -252,7 +252,7 @@ jobs:
       #        run: ./gradlew ${{ env.gradle-options }} signAllPublications --parallel
 
       - name: Publish on Maven Central Repo
-        run: ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel || ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenRepository --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishMavenCentralPublicationToMavenRepository --parallel || ./gradlew ${{ env.gradle-options }} publishMavenCentralPublicationToMavenRepository --parallel
         #        if: contains(github.ref, 'master')
 
       - name: Publish Gradle Plugin
