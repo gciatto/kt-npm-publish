@@ -256,8 +256,7 @@ jobs:
         #        if: contains(github.ref, 'master')
 
       - name: Publish Gradle Plugin
-        run: ./gradlew ${{ env.gradle-options }} publishPlugin --parallel || ./gradlew ${{ env.gradle-options }} publishPlugin --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel || ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel
         #        if: contains(github.ref, 'master')
         env:
-          ORG_GRADLE_PROJECT_gradle.publish.key: ${{ secrets.GRADLE_KEY }}
-          ORG_GRADLE_PROJECT_gradle.publish.secret: ${{ secrets.GRADLE_SECRET }}
+          gradle-secrets: "-Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }}"
