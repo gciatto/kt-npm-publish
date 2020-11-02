@@ -27,9 +27,6 @@ jobs:
         with:
           jdk: ${{ env.jdk-version }}
 
-      - name: Show Env
-        run: ./gradlew --version
-
   build:
     runs-on: ubuntu-latest
     needs:
@@ -73,6 +70,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-build
 
+      - name: Show Env
+        run: ./gradlew --version
+
       - name: Setup Gradle
         run: ./gradlew ${{ env.gradle-options }}
 
@@ -86,7 +86,7 @@ jobs:
           name: ktlint-reports
           path: '**/build/reports/ktlint'
 
-      - name: Check fo Bugs
+      - name: Check for Bugs
         run: ./gradlew ${{ env.gradle-options }} detekt
 
       - name: Compile
