@@ -1,0 +1,58 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform' version '1.4.10'
+    id "io.github.gciatto.kt-npm-publish"
+}
+
+group 'org.example'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+kotlin {
+    /* Targets configuration omitted. 
+    *  To find out how to configure the targets, please follow the link:
+    *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
+    jvm()
+
+    js {
+        nodejs()
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-common')
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
+            }
+        }
+    }
+}
+
+npmPublishing {
+    defaultValuesFrom rootProject
+    token.set("fake_token")
+
+    liftPackageJson {
+        version = '1.2.3'
+        name = "@organization/$name"
+        dependencies = dependencies.collectEntries { name, version ->
+            if (version.startsWith("file:")) {
+                [name, version.split('/').last()]
+            } else {
+                [name, version]
+            }
+        }
+    }
+
+    liftJsSources { file, i, line ->
+        line.replace("'test-mpp", "'@organization/test-mpp")
+                .replace("\"test-mpp", "\"@organization/test-mpp")
+    }
+}
