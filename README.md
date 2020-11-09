@@ -1,10 +1,21 @@
-# TODO LIST
+# Publishing Kotlin Multi-Platform Projects to NPM
 
-1. Rename the project in `settings.gradle.kts`
-1. Change the project information in `build.gradle.kts`
-1. Change the repo slug in `.travis.yml`
-1. Create a file with secrets for the signatory
-1. Configure the CI to have the following variables set:
-  * ORG_GRADLE_PROJECT_signingPassword
-  * MAVEN_CENTRAL_USERNAME
-  * MAVEN_CENTRAL_PASSWORD
+A Gradle plugin letting developers upload Kotlin-JS or -MPP projects on NPM.
+It requires a Gradle project including one of the following plugins:
+- `org.jetbrains.kotlin.js`
+- `org.jetbrains.kotlin.multiplatform`
+
+In both cases, the plugin assumes a Node Js target has been added to your project, explicitly, via the syntax:
+```kotlin
+kotlin {
+    js {
+        nodeJs {
+            // ...
+        }
+    }
+}
+```
+
+The plugin does _not_ apply any of the aforementioned `org.jetbrains.kotlin.*` plugins behind the scenes.
+Thus, it is important to apply them accordingly.
+
