@@ -85,7 +85,7 @@ npmPublishing {
 
     liftJsSources { file, i, line ->
         line.replace("'test-mpp", "'@organization/test-mpp")
-                .replace("\"test-mpp", "\"@organization/test-mpp")
+            .replace("\"test-mpp", "\"@organization/test-mpp")
     }
 }
 ```
