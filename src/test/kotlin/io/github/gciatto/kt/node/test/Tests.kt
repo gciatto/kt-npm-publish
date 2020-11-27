@@ -6,7 +6,6 @@ import io.github.classgraph.ClassGraph
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.file.shouldExist
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
@@ -72,7 +71,7 @@ class Tests : StringSpec({
                         val file = it.actualFile(testFolder.root)
                         file.shouldExist()
                         file.shouldBeAFile()
-                        it.isValid(testFolder.root) shouldBe true
+                        it.shouldBeValidWrt(testFolder.root)
                     }
                 }
             }
@@ -81,8 +80,8 @@ class Tests : StringSpec({
         val log = LoggerFactory.getLogger(Tests::class.java)
 
         private fun BuildResult.outcomeOf(name: String) = task(":$name")
-            ?.outcome
-            ?: throw IllegalStateException("Task $name was not present among the executed tasks")
+                ?.outcome
+                ?: throw IllegalStateException("Task $name was not present among the executed tasks")
 
         private fun folder(closure: TemporaryFolder.() -> Unit) = TemporaryFolder().apply {
             create()
@@ -92,6 +91,17 @@ class Tests : StringSpec({
         private fun Sequence<String>.anyShouldMatch(regex: Regex) {
             if (!any { regex.matches(it) }) {
                 throw AssertionError("No line matches: ${regex.pattern}")
+            }
+        }
+
+        private fun ExistingFile.shouldBeValidWrt(root: File) {
+            if (!this.isValid(root)) {
+                throw AssertionError(
+                        "File $file should exist and contain "
+                                + if (all) "all of" else "any of"
+                                + " the following lines: "
+                                + contents.joinToString { " `$it`" }
+                )
             }
         }
     }
