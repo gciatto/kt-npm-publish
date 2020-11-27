@@ -65,7 +65,7 @@ open class LiftPackageJsonTask : AbstractNodeDefaultTask() {
     }
 
     private fun save() {
-        FileWriter(packageJsonFile.get()).use {
+        FileWriter(packageJsonFile.get().parentFile.resolve("package.json")).use {
             gson.toJson(packageJson?.toJson() ?: packageJsonRaw, it)
         }
     }

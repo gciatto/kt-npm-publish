@@ -14,7 +14,7 @@ tests:
       output_matches: &output_matches
         - "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v12.16.1-linux-x64"
         - "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
-        - "\\[test-js\\] \\[npmPublishing\\]: Inferred packageJson from task :packageJson: .*?/build/js/packages/test-js/package.json"
+        - "\\[test-js\\] \\[npmPublishing\\]: Inferred packageJson from task :packageJson: .*?/build/js/packages/test-js/(pre-)package.json"
         - "\\[test-js\\] \\[npmPublishing\\]: Inferred jsCompileTask: :compileKotlinJs"
         - "\\[test-js\\] \\[npmPublishing\\]: Inferred jsSourcesDir from task :compileKotlinJs: .*?/build/js/packages/test-js/kotlin"
       success: tasks

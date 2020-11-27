@@ -6,6 +6,7 @@ import io.github.classgraph.ClassGraph
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.file.shouldExist
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
@@ -59,9 +60,7 @@ class Tests : StringSpec({
                     }
                     test.expectation.output_matches.forEach { regexString ->
                         val regex = Regex(regexString)
-                        result.output.lineSequence().any {
-                            regex.matches(it)
-                        } shouldBe true
+                        result.output.lineSequence().anyShouldMatch(regex)
                     }
                     test.expectation.success.forEach {
                         result.outcomeOf(it) shouldBe TaskOutcome.SUCCESS
@@ -88,6 +87,12 @@ class Tests : StringSpec({
         private fun folder(closure: TemporaryFolder.() -> Unit) = TemporaryFolder().apply {
             create()
             closure()
+        }
+
+        private fun Sequence<String>.anyShouldMatch(regex: Regex) {
+            if (!any { regex.matches(it) }) {
+                throw AssertionError("No line matches: ${regex.pattern}")
+            }
         }
     }
 }
