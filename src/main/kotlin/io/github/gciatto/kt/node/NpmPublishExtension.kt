@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.withType
@@ -14,7 +15,7 @@ import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import java.io.File
 
-open class NpmPublishExtension(objects: ObjectFactory) {
+open class NpmPublishExtension(objects: ObjectFactory, private val providers: ProviderFactory) {
 
     companion object {
 
@@ -92,13 +93,13 @@ open class NpmPublishExtension(objects: ObjectFactory) {
         }
     }
 
-    private fun warn(project: Project, message: () -> String) {
+    internal fun warn(project: Project, message: () -> String) {
         if (verbose) {
             println("[WARNING] [${project.name}] [$NAME]: ${message()}")
         }
     }
 
-    private fun log(project: Project, message: () -> String) {
+    internal fun log(project: Project, message: () -> String) {
         if (verbose) {
             println("[${project.name}] [$NAME]: ${message()}")
         }
@@ -107,38 +108,56 @@ open class NpmPublishExtension(objects: ObjectFactory) {
     fun defaultValuesFrom(project: Project) {
         val rootProject = project.rootProject
         rootProject.tasks.withType<NodeJsSetupTask>()
-                .all {
-                    log(project) {
-                        "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${it.path}: ${it.destination}"
-                    }
-                    nodeRoot.set(it.destination)
-                    log(project) {
-                        "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${it.path}"
-                    }
-                    nodeSetupTask.set(it.path)
+                .all { nodeJsSetupTask ->
+                    nodeRoot.set(providers.provider {
+                        nodeJsSetupTask.destination.also {
+                            log(project) {
+                                "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${nodeJsSetupTask.path}: $it"
+                            }
+                        }
+                    })
+                    nodeSetupTask.set(providers.provider {
+                        nodeJsSetupTask.path.also {
+                            log(project) {
+                                "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${nodeJsSetupTask.path}"
+                            }
+                        }
+                    })
                 }
         project.tasks.withType<KotlinPackageJsonTask>()
                 .matching { !it.name.contains("test", ignoreCase = true) }
-                .all {
-                    try {
-                        log(project) {
-                            "Inferred ${NpmPublishExtension::packageJson.name} from task ${it.path}: ${it.packageJson}"
+                .all { packageJsonTask ->
+                    packageJson.set(providers.provider {
+                        try {
+                            packageJsonTask.packageJson.parentFile.resolve("package.json").also {
+                                log(project) {
+                                    "Inferred ${NpmPublishExtension::packageJson.name} " +
+                                            "from task ${packageJsonTask.path}: $it"
+                                }
+                            }
+                        } catch (_: UninitializedPropertyAccessException) {
+                            warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} " +
+                                    "from task ${packageJsonTask.path}" }
+                            null
                         }
-                        packageJson.set(it.packageJson)
-                    } catch (_: UninitializedPropertyAccessException) {
-                        warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} from task ${it.path}" }
-                    }
+                    })
                 }
         project.tasks.withType<Kotlin2JsCompile>()
                 .matching { !it.name.contains("test", ignoreCase = true) }
-                .all {
-                    log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: ${it.path}" }
-                    jsCompileTask.set(it.path)
-                    log(project) {
-                        "Inferred ${NpmPublishExtension::jsSourcesDir.name} from task ${it.path}" +
-                                ": ${it.outputFile.parentFile}"
-                    }
-                    jsSourcesDir.set(it.outputFile.parentFile)
+                .all { kt2JsCompileTask ->
+                    jsCompileTask.set(providers.provider {
+                        kt2JsCompileTask.path.also {
+                            log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: $it" }
+                        }
+                    })
+                    jsSourcesDir.set(providers.provider {
+                        kt2JsCompileTask.outputFile.parentFile.also {
+                            log(project) {
+                                "Inferred ${NpmPublishExtension::jsSourcesDir.name} " +
+                                        "from task ${kt2JsCompileTask.path}: ${kt2JsCompileTask.outputFile.parentFile}"
+                            }
+                        }
+                    })
                 }
     }
 }

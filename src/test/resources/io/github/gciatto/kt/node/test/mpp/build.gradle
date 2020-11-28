@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.multiplatform' version '1.4.10'
+    id 'org.jetbrains.kotlin.multiplatform' version '1.4.20'
     id "io.github.gciatto.kt-npm-publish"
 }
 
@@ -36,7 +36,6 @@ kotlin {
 }
 
 npmPublishing {
-    defaultValuesFrom rootProject
     token.set("fake_token")
 
     liftPackageJson {

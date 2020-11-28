@@ -59,9 +59,7 @@ class Tests : StringSpec({
                     }
                     test.expectation.output_matches.forEach { regexString ->
                         val regex = Regex(regexString)
-                        result.output.lineSequence().any {
-                            regex.matches(it)
-                        } shouldBe true
+                        result.output.lineSequence().anyShouldMatch(regex)
                     }
                     test.expectation.success.forEach {
                         result.outcomeOf(it) shouldBe TaskOutcome.SUCCESS
@@ -73,7 +71,7 @@ class Tests : StringSpec({
                         val file = it.actualFile(testFolder.root)
                         file.shouldExist()
                         file.shouldBeAFile()
-                        it.isValid(testFolder.root) shouldBe true
+                        it.shouldBeValidWrt(testFolder.root)
                     }
                 }
             }
@@ -82,12 +80,29 @@ class Tests : StringSpec({
         val log = LoggerFactory.getLogger(Tests::class.java)
 
         private fun BuildResult.outcomeOf(name: String) = task(":$name")
-            ?.outcome
-            ?: throw IllegalStateException("Task $name was not present among the executed tasks")
+                ?.outcome
+                ?: throw IllegalStateException("Task $name was not present among the executed tasks")
 
         private fun folder(closure: TemporaryFolder.() -> Unit) = TemporaryFolder().apply {
             create()
             closure()
+        }
+
+        private fun Sequence<String>.anyShouldMatch(regex: Regex) {
+            if (!any { regex.matches(it) }) {
+                throw AssertionError("No line matches: ${regex.pattern}")
+            }
+        }
+
+        private fun ExistingFile.shouldBeValidWrt(root: File) {
+            if (!this.isValid(root)) {
+                throw AssertionError(
+                        "File ${file.resolve(root)} should exist and contain " +
+                                (if (all) "all of" else "any of") +
+                                " the following lines: " +
+                                contents.joinToString { "`$it`" }
+                )
+            }
         }
     }
 }

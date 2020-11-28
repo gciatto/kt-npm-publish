@@ -1,5 +1,5 @@
 tests:
-  - description: "Kt-Js projects work"
+  - description: "Kt projects work"
     configuration:
       tasks: help
     expectation:

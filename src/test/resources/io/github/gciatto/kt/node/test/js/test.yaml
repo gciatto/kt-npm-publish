@@ -11,26 +11,25 @@ tests:
         - npmLoginSetToken
         - liftPackageJson
         - liftJsSources
-      output_matches: &output_matches
-        - "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v12.16.1-linux-x64"
-        - "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
-        - "\\[test-js\\] \\[npmPublishing\\]: Inferred packageJson from task :packageJson: .*?/build/js/packages/test-js/package.json"
-        - "\\[test-js\\] \\[npmPublishing\\]: Inferred jsCompileTask: :compileKotlinJs"
-        - "\\[test-js\\] \\[npmPublishing\\]: Inferred jsSourcesDir from task :compileKotlinJs: .*?/build/js/packages/test-js/kotlin"
       success: tasks
 
   - description: "Kt-Js projects importing kt-npm-publish should support npmLogin by only setting up the `token` property"
     configuration:
       tasks: npmLogin
     expectation:
-      output_matches: *output_matches
+      output_matches:
+        - &inferred_nodeSetupTask
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
+        - &inferred_jsCompileTask
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred jsCompileTask: :compileKotlinJs"
+        - &inferred_nodeRoot
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v\\d+.\\d+.\\d+-[^\\s]+"
       success: npmLogin
 
   - description: "Kt-Js projects support compilation as an NPM project"
     configuration:
       tasks: compileKotlinJs
     expectation:
-      output_matches: *output_matches
       success: compileKotlinJs
       file_exists:
         - name: &file_package_json
@@ -39,7 +38,7 @@ tests:
             - '"version": "1\.0\.0"'
             - '"main": "kotlin/test-js\.js"'
             - '"name": "test-js"'
-            - '"kotlin": "file:.*?/1.4.10"'
+            - '"kotlin": "file:.*?/1.\d+.\d+"'
         - name: &file_generated_js
             "build/js/packages/test-js/kotlin/test-js.js"
           contents:
@@ -50,7 +49,10 @@ tests:
     configuration:
       tasks: liftPackageJson
     expectation:
-      output_matches: *output_matches
+      output_matches:
+        - &inferred_packageJson
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred packageJson from task :packageJson: .*?/build/js/packages/test-js/package.json"
+        - *inferred_jsCompileTask
       success: liftPackageJson
       file_exists:
         - name: *file_package_json
@@ -58,13 +60,16 @@ tests:
             - '"version": "1\.2\.3"'
             - '"main": "kotlin/test-js\.js"'
             - '"name": "@organization/test-js"'
-            - '"kotlin": "1.4.10"'
+            - '"kotlin": "1.\d+.\d+"'
 
   - description: "Kt-Js projects importing and configuring kt-npm-publish support lifting of generated .js files"
     configuration:
       tasks: liftJsSources
     expectation:
-      output_matches: *output_matches
+      output_matches:
+        - *inferred_jsCompileTask
+        - &inferred_jsSourcesDir
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred jsSourcesDir from task :compileKotlinJs: .*?/build/js/packages/test-js/kotlin"
       success: liftJsSources
       file_exists:
         - name: *file_generated_js
@@ -76,7 +81,9 @@ tests:
     configuration:
       tasks: copyFilesNextToPackageJson
     expectation:
-      output_matches: *output_matches
+      output_matches:
+        - *inferred_packageJson
+        - *inferred_jsCompileTask
       success: copyFilesNextToPackageJson
       file_exists:
         - name: "build/js/packages/test-js/README.md"
@@ -85,7 +92,12 @@ tests:
     configuration:
       tasks: npmPublish
     expectation:
-      output_matches: *output_matches
+      output_matches:
+        - *inferred_jsCompileTask
+        - *inferred_jsSourcesDir
+        - *inferred_packageJson
+        - *inferred_nodeRoot
+        - *inferred_nodeSetupTask
       output_contains:
         - 'npm ERR! 404 Not Found - PUT https://registry.npmjs.org/@organization%2ftest-js - Not found'
       failure: npmPublish

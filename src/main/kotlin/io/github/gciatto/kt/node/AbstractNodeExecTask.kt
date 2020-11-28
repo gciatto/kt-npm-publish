@@ -54,7 +54,7 @@ abstract class AbstractNodeExecTask(requiresCompilation: Boolean = false) : Exec
     protected abstract fun setupArguments(): Array<String>
 
     protected open fun afterSetup() {
-        println("Executing: ${commandLine.joinToString()}")
+        println("Executing: ${commandLine.joinToString(" ")}")
     }
 
     private fun configSecurityWarning() {
