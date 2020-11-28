@@ -131,11 +131,13 @@ open class NpmPublishExtension(objects: ObjectFactory, private val providers: Pr
                         try {
                             packageJsonTask.packageJson.parentFile.resolve("package.json").also {
                                 log(project) {
-                                    "Inferred ${NpmPublishExtension::packageJson.name} from task ${packageJsonTask.path}: $it"
+                                    "Inferred ${NpmPublishExtension::packageJson.name} " +
+                                            "from task ${packageJsonTask.path}: $it"
                                 }
                             }
                         } catch (_: UninitializedPropertyAccessException) {
-                            warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} from task ${packageJsonTask.path}" }
+                            warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} " +
+                                    "from task ${packageJsonTask.path}" }
                             null
                         }
                     })
@@ -151,7 +153,8 @@ open class NpmPublishExtension(objects: ObjectFactory, private val providers: Pr
                     jsSourcesDir.set(providers.provider {
                         kt2JsCompileTask.outputFile.parentFile.also {
                             log(project) {
-                                "Inferred ${NpmPublishExtension::jsSourcesDir.name} from task ${kt2JsCompileTask.path}: ${kt2JsCompileTask.outputFile.parentFile}"
+                                "Inferred ${NpmPublishExtension::jsSourcesDir.name} " +
+                                        "from task ${kt2JsCompileTask.path}: ${kt2JsCompileTask.outputFile.parentFile}"
                             }
                         }
                     })
