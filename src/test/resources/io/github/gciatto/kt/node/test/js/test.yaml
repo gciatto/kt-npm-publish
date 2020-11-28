@@ -23,14 +23,19 @@ tests:
     configuration:
       tasks: npmLogin
     expectation:
-      #      output_matches: *output_matches
+      output_matches:
+        - &inferred_nodeSetupTask
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
+        - &inferred_jsCompileTask
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred jsCompileTask: :compileKotlinJs"
+        - &inferred_nodeRoot
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v\\d+.\\d+.\\d+-[^\\s]+"
       success: npmLogin
 
   - description: "Kt-Js projects support compilation as an NPM project"
     configuration:
       tasks: compileKotlinJs
     expectation:
-      #      output_matches: *output_matches
       success: compileKotlinJs
       file_exists:
         - name: &file_package_json
@@ -50,7 +55,10 @@ tests:
     configuration:
       tasks: liftPackageJson
     expectation:
-      #      output_matches: *output_matches
+      output_matches:
+        - &inferred_packageJson
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred packageJson from task :packageJson: .*?/build/js/packages/test-js/package.json"
+        - *inferred_jsCompileTask
       success: liftPackageJson
       file_exists:
         - name: *file_package_json
@@ -64,7 +72,10 @@ tests:
     configuration:
       tasks: liftJsSources
     expectation:
-      #      output_matches: *output_matches
+      output_matches:
+        - *inferred_jsCompileTask
+        - &inferred_jsSourcesDir
+            "\\[test-js\\] \\[npmPublishing\\]: Inferred jsSourcesDir from task :compileKotlinJs: .*?/build/js/packages/test-js/kotlin"
       success: liftJsSources
       file_exists:
         - name: *file_generated_js
@@ -76,7 +87,9 @@ tests:
     configuration:
       tasks: copyFilesNextToPackageJson
     expectation:
-      #      output_matches: *output_matches
+      output_matches:
+        - *inferred_packageJson
+        - *inferred_jsCompileTask
       success: copyFilesNextToPackageJson
       file_exists:
         - name: "build/js/packages/test-js/README.md"
@@ -85,7 +98,12 @@ tests:
     configuration:
       tasks: npmPublish
     expectation:
-      #      output_matches: *output_matches
+      output_matches:
+        - *inferred_jsCompileTask
+        - *inferred_jsSourcesDir
+        - *inferred_packageJson
+        - *inferred_nodeRoot
+        - *inferred_nodeSetupTask
       output_contains:
         - 'npm ERR! 404 Not Found - PUT https://registry.npmjs.org/@organization%2ftest-js - Not found'
       failure: npmPublish
