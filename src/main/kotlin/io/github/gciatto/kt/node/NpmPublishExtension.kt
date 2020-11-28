@@ -145,7 +145,7 @@ open class NpmPublishExtension(objects: ObjectFactory, private val providers: Pr
                 .all { kt2JsCompileTask ->
                     jsCompileTask.set(providers.provider {
                         kt2JsCompileTask.path.also {
-                            log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: ${it}" }
+                            log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: $it" }
                         }
                     })
                     jsSourcesDir.set(providers.provider {

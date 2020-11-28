@@ -97,10 +97,10 @@ class Tests : StringSpec({
         private fun ExistingFile.shouldBeValidWrt(root: File) {
             if (!this.isValid(root)) {
                 throw AssertionError(
-                        "File $file should exist and contain "
-                                + if (all) "all of" else "any of"
-                                + " the following lines: "
-                                + contents.joinToString { " `$it`" }
+                        "File ${file.resolve(root)} should exist and contain " +
+                                (if (all) "all of" else "any of") +
+                                " the following lines: " +
+                                contents.joinToString { "`$it`" }
                 )
             }
         }

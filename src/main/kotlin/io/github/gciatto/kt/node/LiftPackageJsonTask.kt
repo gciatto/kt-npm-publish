@@ -34,11 +34,16 @@ open class LiftPackageJsonTask : AbstractNodeDefaultTask() {
         rawLiftingActions.set(extension.packageJsonRawLiftingActions)
     }
 
+    private lateinit var actualPackageJsonFile: File
+
     @TaskAction
     fun lift() {
-        val packageJsonFile = this.packageJsonFile.get()
-        if (!packageJsonFile.exists()) {
-            error("File ${packageJsonFile.path} does not exist")
+        actualPackageJsonFile = packageJsonFile.get()
+        if (!actualPackageJsonFile.exists()) {
+            actualPackageJsonFile = actualPackageJsonFile.parentFile.resolve("pre-package.json")
+        }
+        if (!actualPackageJsonFile.exists()) {
+            error("File ${packageJsonFile.get().path} does not exist")
         }
         resolve()
         performLifting()
@@ -46,12 +51,11 @@ open class LiftPackageJsonTask : AbstractNodeDefaultTask() {
     }
 
     private fun resolve() {
-        val packageJsonFile = this.packageJsonFile.get()
-        packageJsonRaw = gson.fromJson(FileReader(packageJsonFile), JsonObject::class.java)
+        packageJsonRaw = gson.fromJson(FileReader(actualPackageJsonFile), JsonObject::class.java)
         packageJson = try {
             PackageJson.fromJson(packageJsonRaw)
         } catch (_: Throwable) {
-            System.err.println("Cannot parse $packageJsonFile as a data class, use raw lifting")
+            System.err.println("Cannot parse $actualPackageJsonFile as a data class, use raw lifting")
             null
         }
     }
@@ -65,7 +69,7 @@ open class LiftPackageJsonTask : AbstractNodeDefaultTask() {
     }
 
     private fun save() {
-        FileWriter(packageJsonFile.get().parentFile.resolve("package.json")).use {
+        FileWriter(actualPackageJsonFile.parentFile.resolve("package.json")).use {
             gson.toJson(packageJson?.toJson() ?: packageJsonRaw, it)
         }
     }

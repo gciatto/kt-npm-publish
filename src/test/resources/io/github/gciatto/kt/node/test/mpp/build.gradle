@@ -36,7 +36,6 @@ kotlin {
 }
 
 npmPublishing {
-    defaultValuesFrom rootProject
     token.set("fake_token")
 
     liftPackageJson {

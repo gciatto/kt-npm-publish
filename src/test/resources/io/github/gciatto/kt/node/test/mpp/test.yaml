@@ -11,26 +11,26 @@ tests:
         - npmLoginSetToken
         - liftPackageJson
         - liftJsSources
-      output_matches: &output_matches
-        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v12.16.1-linux-x64"
-        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
-        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred packageJson from task :jsPackageJson: .*?/build/js/packages/test-mpp/package.json"
-        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred jsCompileTask: :compileKotlinJs"
-        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred jsSourcesDir from task :compileKotlinJs: .*?/build/js/packages/test-mpp/kotlin"
+      #      output_matches: &output_matches
+      #        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred nodeRoot from task :kotlinNodeJsSetup: .*?/nodejs/node-v12.16.1-linux-x64"
+      #        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred nodeSetupTask: :kotlinNodeJsSetup"
+      #        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred packageJson from task :jsPackageJson: .*?/build/js/packages/test-mpp/package.json"
+      #        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred jsCompileTask: :compileKotlinJs"
+      #        - "\\[test-mpp\\] \\[npmPublishing\\]: Inferred jsSourcesDir from task :compileKotlinJs: .*?/build/js/packages/test-mpp/kotlin"
       success: tasks
 
   - description: "Kt-MPP projects importing kt-npm-publish should support npmLogin by only setting up the `token` property"
     configuration:
       tasks: npmLogin
     expectation:
-      output_matches: *output_matches
+      #      output_matches: *output_matches
       success: npmLogin
 
   - description: "Kt-MPP projects support compilation as an NPM project"
     configuration:
       tasks: compileKotlinJs
     expectation:
-      output_matches: *output_matches
+      #      output_matches: *output_matches
       success: compileKotlinJs
       file_exists:
         - name: &file_package_json
@@ -39,7 +39,7 @@ tests:
             - '"version": "1\.0\.0"'
             - '"main": "kotlin/test-mpp\.js"'
             - '"name": "test-mpp"'
-            - '"kotlin": "file:.*?/1.4.10"'
+            - '"kotlin": "file:.*?/1.\d+.\d+"'
         - name: &file_generated_js
                   "build/js/packages/test-mpp/kotlin/test-mpp.js"
           contents:
@@ -50,7 +50,7 @@ tests:
     configuration:
       tasks: liftPackageJson
     expectation:
-      output_matches: *output_matches
+      #      output_matches: *output_matches
       success: liftPackageJson
       file_exists:
         - name: *file_package_json
@@ -58,13 +58,13 @@ tests:
             - '"version": "1\.2\.3"'
             - '"main": "kotlin/test-mpp\.js"'
             - '"name": "@organization/test-mpp"'
-            - '"kotlin": "1.4.10"'
+            - '"kotlin": "1.\d+.\d+"'
 
   - description: "Kt-MPP projects importing and configuring kt-npm-publish support lifting of generated .js files"
     configuration:
       tasks: liftJsSources
     expectation:
-      output_matches: *output_matches
+      #      output_matches: *output_matches
       success: liftJsSources
       file_exists:
         - name: *file_generated_js
@@ -76,7 +76,7 @@ tests:
     configuration:
       tasks: copyFilesNextToPackageJson
     expectation:
-      output_matches: *output_matches
+      #      output_matches: *output_matches
       success: copyFilesNextToPackageJson
       file_exists:
         - name: "build/js/packages/test-mpp/README.md"
@@ -85,7 +85,7 @@ tests:
     configuration:
       tasks: npmPublish
     expectation:
-      output_matches: *output_matches
+      #      output_matches: *output_matches
       output_contains:
         - 'npm ERR! 404 Not Found - PUT https://registry.npmjs.org/@organization%2ftest-mpp - Not found'
       failure: npmPublish

@@ -5,7 +5,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Exec
-import org.jetbrains.kotlin.gradle.targets.js.dukat.IntegratedDukatTask
+import org.jetbrains.kotlin.gradle.targets.js.npm.PublicPackageJsonTask
 
 class NpmPublishPlugin : Plugin<Project> {
 
@@ -48,7 +48,9 @@ class NpmPublishPlugin : Plugin<Project> {
     private fun Project.createLiftPackageJsonTask(name: String): LiftPackageJsonTask {
         return tasks.maybeCreate(name, LiftPackageJsonTask::class.java).also { liftTask ->
             liftTask.defaultValuesFrom(extension)
-            tasks.withType(IntegratedDukatTask::class.java).all {
+            tasks.withType(PublicPackageJsonTask::class.java).matching {
+                it.name.contains("test", ignoreCase = true).not()
+            }.all {
                 liftTask.dependsOn(it)
                 extension.log(this) {
                     "Found task ${it.path}: ${liftTask.path} will depend on it"
