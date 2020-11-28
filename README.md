@@ -22,7 +22,6 @@ Thus, it is important to apply them accordingly.
 The basic configuration of the plugin is as follows:
 ```kotlin
 npmPublishing {
-    defaultValuesFrom(project)
     token.set("<NPM authentication token here>")
 }
 ```
@@ -31,13 +30,12 @@ The most relevant one is `:npmPublish` which essentially packs and uploads the J
 out of the Kotlin code.
 This task also includes any file in the root project's directory whose name matches `README*`, `CONTRIB*`, or `LICENSE*`.
 
-It is important to call `defaultValuesFrom(project)` AFTER setting up the `nodeJs` target within the `kotlin` section.
-Otherwise, the procedure configuring the plugin automatically won't work.
+<!-- It is important to call `defaultValuesFrom(project)` AFTER setting up the `nodeJs` target within the `kotlin` section.
+Otherwise, the procedure configuring the plugin automatically won't work. -->
 
 Users may override a number of properties within the `npmPublishing`, like for instance:
 ```kotlin
 npmPublishing {
-    defaultValuesFrom(project)
     token.set("<NPM authentication token here>")
 
     registry.set("<custom NPM registry here>") // defaults to registry.npmjs.org
@@ -57,7 +55,6 @@ The user may update any field, and each modification will be reified into the `p
 For instance, the following snippet adds a number a developer to the generated `package.json`, other than setting a few common metadata:
 ```kotlin
 npmPublishing {
-    defaultValuesFrom(project)
     token.set("<NPM authentication token here>")
 
     liftPackageJson {
@@ -73,7 +70,6 @@ If you want to publish your project (say `test-js`) under the organization named
 both the generated `package.json` and the generated `.js` files as follows:
 ```kotlin
 npmPublishing {
-    defaultValuesFrom(project)
     token.set("<NPM authentication token here>")
 
     liftPackageJson {
