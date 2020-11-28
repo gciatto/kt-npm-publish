@@ -61,7 +61,7 @@ class NpmPublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         extension = target.extensions.create(NpmPublishExtension.NAME, NpmPublishExtension::class.java)
-        extension.verbose = target.property(VERBOSE_PROPERTY)?.toString().toBoolean()
+        extension.verbose = target.findProperty(VERBOSE_PROPERTY)?.toString().toBoolean()
         extension.defaultValuesFrom(target)
         val login = target.createNpmLoginTask("npmLogin")
         val publish = target.createNpmPublishTask("npmPublish")
