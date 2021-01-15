@@ -138,6 +138,11 @@ gradlePlugin {
 val signingKey: String? by project
 val signingPassword: String? by project
 
+println("""
+        Signing Key: ${mask(signingKey)}
+        Signing Passowrd: ${mask(signingPassword)}
+    """.trimIndent())
+
 signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
 }
@@ -145,6 +150,12 @@ signing {
 val mavenRepo: String by project
 val mavenUsername: String by project
 val mavenPassword: String by project
+
+println("""
+        Maven Repository: ${show(mavenRepo)}
+        Maven Username: ${show(mavenUsername)}
+        Maven Password: ${mask(mavenPassword)}
+    """.trimIndent())
 
 publishing {
     repositories {
@@ -203,11 +214,17 @@ publishOnCentral {
 
 nexusPublishing {
     repositories {
-        listOf(sonatype(), create("sonatypeS01")).forEach {
-            it.nexusUrl.set(uri(mavenRepo))
-            it.username.set(mavenUsername)
-            it.password.set(mavenPassword)
+        sonatype {
+            nexusUrl.set(uri(mavenRepo))
+            username.set(mavenUsername)
+            password.set(mavenPassword)
         }
     }
     clientTimeout.set(Duration.ofMinutes(10))
 }
+
+fun mask(string: String?): String =
+    if (string.isNullOrBlank()) "<missing>" else "<provided>"
+
+fun show(string: String?): String =
+    if (string.isNullOrBlank()) "<missing>" else string
