@@ -192,12 +192,12 @@ jobs:
         run: ./gradlew ${{ env.gradle-options }} dokkaHtml --parallel
 
       - name: Sign Archives
-        run: ./gradlew ${{ env.gradle-options }} sign --parallel
+        run: ./gradlew ${{ env.gradle-options }} signJava signKotlin --parallel
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-          MAVEN_CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenPassword: ${{ secrets.OSSRH_PASSWORD }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -206,8 +206,8 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
       ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-      MAVEN_CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-      MAVEN_CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      ORG_GRADLE_PROJECT_mavenUsername: ${{ secrets.OSSRH_USERNAME }}
+      ORG_GRADLE_PROJECT_mavenPassword: ${{ secrets.OSSRH_PASSWORD }}
     steps:
       #      - *checkout_code
       - name: Checkout code
@@ -248,15 +248,12 @@ jobs:
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-prepare
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-maven-
 
-      #      - name: Sign Archives
-      #        run: ./gradlew ${{ env.gradle-options }} signAllPublications --parallel
-
-      - name: Publish on Maven Central Repo
-        run: ./gradlew ${{ env.gradle-options }} publishMavenCentralPublicationToMavenRepository --parallel || ./gradlew ${{ env.gradle-options }} publishMavenCentralPublicationToMavenRepository --parallel
-        #        if: contains(github.ref, 'master')
-
       - name: Publish Gradle Plugin
         run: ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel || ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel
         #        if: contains(github.ref, 'master')
         env:
           gradle-secrets: "-Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }}"
+
+      - name: Publish on Maven Central Repo
+        run: ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenCentralRepository --parallel || ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenCentralRepository --parallel
+        #        if: contains(github.ref, 'master')

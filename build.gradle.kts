@@ -1,3 +1,4 @@
+import java.time.Duration
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -14,6 +15,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
     id("org.danilopianini.git-sensitive-semantic-versioning")
     id("org.danilopianini.publish-on-central")
+    id("de.marcphilipp.nexus-publish")
 }
 
 /*
@@ -27,7 +29,7 @@ inner class NpmPublishInfo {
     val scm = "git@github.com:gciatto/kt-npm-publish.git"
     val pluginImplementationClass = "$group.kt.node.NpmPublishPlugin"
     val tags = listOf("kotlin", "multi plaftorm", "js", "javascript", "publish", "npm", "gradle")
-    val license = "Apache 2.0"
+    val license = "Apache License, Version 2.0"
     val licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0"
 }
 val info = NpmPublishInfo()
@@ -133,21 +135,23 @@ gradlePlugin {
     }
 }
 
+val signingKey: String? by project
+val signingPassword: String? by project
+
 signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
     useInMemoryPgpKeys(signingKey, signingPassword)
 }
 
 publishing {
     publications {
         withType<MavenPublication> {
+            val pubName = name
             pom {
                 name.set(info.longName)
                 description.set(project.description)
                 packaging = "jar"
                 url.set(info.website)
-                if (!this@withType.name.contains("MavenCentral", ignoreCase=true)) {
+                if (pubName.contains("plugin", ignoreCase = true)) {
                     licenses {
                         license {
                             name.set(info.license)
@@ -172,14 +176,30 @@ publishing {
     }
 }
 
-/*
- * Publication on Maven Central and the Plugin portal
- */
+val mavenRepo: String by project
+val mavenUsername: String by project
+val mavenPassword: String by project
+
 publishOnCentral {
-    projectLongName.set(info.longName)
-    projectDescription.set(description)
-    projectUrl.set(info.website)
-    scmConnection.set(info.scm)
-    licenseName.set(info.license)
-    licenseUrl.set(info.licenseUrl)
+    projectLongName = info.longName
+    projectDescription = project.description ?: "No description provided"
+    projectUrl = info.website
+    scmConnection = info.scm
+    licenseName = info.license
+    licenseUrl = info.licenseUrl
+    repository(mavenRepo) {
+        user = mavenUsername
+        password = mavenPassword
+    }
+}
+
+nexusPublishing {
+    repositories {
+        create("sonatypeS01") {
+            nexusUrl.set(uri(mavenRepo))
+            username.set(mavenUsername)
+            password.set(mavenPassword)
+        }
+    }
+    clientTimeout.set(Duration.ofMinutes(10))
 }
