@@ -255,5 +255,5 @@ jobs:
           gradle-secrets: "-Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }}"
 
       - name: Publish on Maven Central Repo
-        run: ./gradlew ${{ env.gradle-options }} publishAllPublicationsToSonatypeS01Repository --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishJavaMavenPublicationToSonatypeRepository --parallel
         #        if: contains(github.ref, 'master')
