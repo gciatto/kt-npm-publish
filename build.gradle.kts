@@ -142,7 +142,19 @@ signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
 }
 
+val mavenRepo: String by project
+val mavenUsername: String by project
+val mavenPassword: String by project
+
 publishing {
+    repositories {
+        maven(mavenRepo) {
+            credentials {
+                username = mavenUsername
+                password = mavenPassword
+            }
+        }
+    }
     publications {
         withType<MavenPublication> {
             val pubName = name
@@ -176,10 +188,6 @@ publishing {
     }
 }
 
-val mavenRepo: String by project
-val mavenUsername: String by project
-val mavenPassword: String by project
-
 publishOnCentral {
     projectLongName = info.longName
     projectDescription = project.description ?: "No description provided"
@@ -195,10 +203,10 @@ publishOnCentral {
 
 nexusPublishing {
     repositories {
-        create("sonatypeS01") {
-            nexusUrl.set(uri(mavenRepo))
-            username.set(mavenUsername)
-            password.set(mavenPassword)
+        listOf(sonatype(), create("sonatypeS01")).forEach {
+            it.nexusUrl.set(uri(mavenRepo))
+            it.username.set(mavenUsername)
+            it.password.set(mavenPassword)
         }
     }
     clientTimeout.set(Duration.ofMinutes(10))

@@ -249,11 +249,11 @@ jobs:
             ${{ runner.os }}-${{ env.workflow }}-gradle-${{ github.sha }}-maven-
 
       - name: Publish Gradle Plugin
-        run: ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel || ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishPlugin ${{ env.gradle-secrets }} --parallel
         #        if: contains(github.ref, 'master')
         env:
           gradle-secrets: "-Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }}"
 
       - name: Publish on Maven Central Repo
-        run: ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenCentralRepository --parallel || ./gradlew ${{ env.gradle-options }} publishAllPublicationsToMavenCentralRepository --parallel
+        run: ./gradlew ${{ env.gradle-options }} publishAllPublicationsToSonatypeS01Repository --parallel
         #        if: contains(github.ref, 'master')
