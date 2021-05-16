@@ -7,6 +7,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.tasks.TaskCollection
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.withType
@@ -27,16 +28,16 @@ open class NpmPublishExtension(objects: ObjectFactory, private val providers: Pr
         private const val npmScriptSubpath = "node_modules/npm/bin/npm-cli.js"
 
         private val possibleNodePaths: Sequence<String> =
-                sequenceOf("bin/node", "node").let { paths ->
-                    if (isWindows) {
-                        paths.map { "$it.exe" } + paths
-                    } else {
-                        paths
-                    }
+            sequenceOf("bin/node", "node").let { paths ->
+                if (isWindows) {
+                    paths.map { "$it.exe" } + paths
+                } else {
+                    paths
                 }
+            }
 
         private val possibleNpmPaths: Sequence<String> =
-                sequenceOf("lib/", "").map { it + npmScriptSubpath }
+            sequenceOf("lib/", "").map { it + npmScriptSubpath }
     }
 
     var verbose = false
@@ -105,59 +106,97 @@ open class NpmPublishExtension(objects: ObjectFactory, private val providers: Pr
         }
     }
 
-    fun defaultValuesFrom(project: Project) {
-        val rootProject = project.rootProject
-        rootProject.tasks.withType<NodeJsSetupTask>()
-                .all { nodeJsSetupTask ->
-                    nodeRoot.set(providers.provider {
-                        nodeJsSetupTask.destination.also {
-                            log(project) {
-                                "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${nodeJsSetupTask.path}: $it"
-                            }
+    private val Project.nodeJsSetupTasks: TaskCollection<NodeJsSetupTask>
+        get() = rootProject.tasks.withType()
+
+    private fun defaultNodeRootValueFrom(project: Project) {
+        project.nodeJsSetupTasks.all { nodeJsSetupTask ->
+            nodeRoot.set(
+                providers.provider {
+                    nodeJsSetupTask.destination.also {
+                        log(project) {
+                            "Inferred ${NpmPublishExtension::nodeRoot.name} from task ${nodeJsSetupTask.path}: $it"
                         }
-                    })
-                    nodeSetupTask.set(providers.provider {
-                        nodeJsSetupTask.path.also {
-                            log(project) {
-                                "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${nodeJsSetupTask.path}"
-                            }
-                        }
-                    })
+                    }
                 }
+            )
+        }
+    }
+
+    private fun defaultNodeSetupTaskValueFrom(project: Project) {
+        project.nodeJsSetupTasks.all { nodeJsSetupTask ->
+            nodeSetupTask.set(
+                providers.provider {
+                    nodeJsSetupTask.path.also {
+                        log(project) {
+                            "Inferred ${NpmPublishExtension::nodeSetupTask.name}: ${nodeJsSetupTask.path}"
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun defaultPackageJsonValueFrom(project: Project) {
         project.tasks.withType<KotlinPackageJsonTask>()
-                .matching { !it.name.contains("test", ignoreCase = true) }
-                .all { packageJsonTask ->
-                    packageJson.set(providers.provider {
+            .matching { !it.name.contains("test", ignoreCase = true) }
+            .all { packageJsonTask ->
+                packageJson.set(
+                    providers.provider {
                         try {
                             packageJsonTask.packageJson.parentFile.resolve("package.json").also {
                                 log(project) {
                                     "Inferred ${NpmPublishExtension::packageJson.name} " +
-                                            "from task ${packageJsonTask.path}: $it"
+                                        "from task ${packageJsonTask.path}: $it"
                                 }
                             }
                         } catch (_: UninitializedPropertyAccessException) {
-                            warn(project) { "Cannot infer ${NpmPublishExtension::packageJson.name} " +
-                                    "from task ${packageJsonTask.path}" }
+                            warn(project) {
+                                "Cannot infer ${NpmPublishExtension::packageJson.name} " +
+                                    "from task ${packageJsonTask.path}"
+                            }
                             null
                         }
-                    })
+                    }
+                )
+            }
+    }
+
+    private val Project.mainKotlin2JsCompileTasks: TaskCollection<Kotlin2JsCompile>
+        get() = tasks.withType<Kotlin2JsCompile>().matching { !it.name.contains("test", ignoreCase = true) }
+
+    private fun defaultJsCompileTaskValueFrom(project: Project) {
+        project.mainKotlin2JsCompileTasks.all { kt2JsCompileTask ->
+            jsCompileTask.set(
+                providers.provider {
+                    kt2JsCompileTask.path.also {
+                        log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: $it" }
+                    }
                 }
-        project.tasks.withType<Kotlin2JsCompile>()
-                .matching { !it.name.contains("test", ignoreCase = true) }
-                .all { kt2JsCompileTask ->
-                    jsCompileTask.set(providers.provider {
-                        kt2JsCompileTask.path.also {
-                            log(project) { "Inferred ${NpmPublishExtension::jsCompileTask.name}: $it" }
+            )
+        }
+    }
+
+    private fun defaultJsSourcesDirValueFrom(project: Project) {
+        project.mainKotlin2JsCompileTasks.all { kt2JsCompileTask ->
+            jsSourcesDir.set(
+                providers.provider {
+                    kt2JsCompileTask.outputFile.parentFile.also {
+                        log(project) {
+                            "Inferred ${NpmPublishExtension::jsSourcesDir.name} " +
+                                "from task ${kt2JsCompileTask.path}: ${kt2JsCompileTask.outputFile.parentFile}"
                         }
-                    })
-                    jsSourcesDir.set(providers.provider {
-                        kt2JsCompileTask.outputFile.parentFile.also {
-                            log(project) {
-                                "Inferred ${NpmPublishExtension::jsSourcesDir.name} " +
-                                        "from task ${kt2JsCompileTask.path}: ${kt2JsCompileTask.outputFile.parentFile}"
-                            }
-                        }
-                    })
+                    }
                 }
+            )
+        }
+    }
+
+    fun defaultValuesFrom(project: Project) {
+        defaultNodeRootValueFrom(project)
+        defaultNodeSetupTaskValueFrom(project)
+        defaultPackageJsonValueFrom(project)
+        defaultJsCompileTaskValueFrom(project)
+        defaultJsSourcesDirValueFrom(project)
     }
 }

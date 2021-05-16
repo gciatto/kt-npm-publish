@@ -138,10 +138,12 @@ gradlePlugin {
 val signingKey: String? by project
 val signingPassword: String? by project
 
-println("""
+println(
+    """
         Signing Key: ${mask(signingKey)}
         Signing Passowrd: ${mask(signingPassword)}
-    """.trimIndent())
+    """.trimIndent()
+)
 
 signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
@@ -151,11 +153,13 @@ val mavenRepo: String by project
 val mavenUsername: String by project
 val mavenPassword: String by project
 
-println("""
+println(
+    """
         Maven Repository: ${show(mavenRepo)}
         Maven Username: ${show(mavenUsername)}
         Maven Password: ${mask(mavenPassword)}
-    """.trimIndent())
+    """.trimIndent()
+)
 
 publishing {
     repositories {
