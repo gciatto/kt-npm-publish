@@ -5,6 +5,14 @@ It requires a Gradle project including one of the following plugins:
 - `org.jetbrains.kotlin.js`
 - `org.jetbrains.kotlin.multiplatform`
 
+The plugin can then be applied via
+
+```kotlin
+plugins {
+  id "io.github.gciatto.kt-npm-publish" version "<pick the latest version>"
+}
+```
+
 In both cases, the plugin assumes a Node Js target has been added to your project, explicitly, via the syntax:
 ```kotlin
 kotlin {
